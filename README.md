@@ -55,7 +55,6 @@ An alternate method popular with Django developers is to install <a href="http:/
       `https:localhost:8000/auth/`
 
     * Scopes. ie, `WorldCatMetadataAPI` for the Django example provided with this library.
-
 1. We use runsslserver to start Django from the project's root directory:
 
     `python manage.py runsslserver`
