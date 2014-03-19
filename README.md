@@ -50,11 +50,10 @@ An alternate method popular with Django developers is to install <a href="http:/
 
    Note that your WSKey must be configured with these parameters:
 
-   * RedirectURI that matches the URI you are running the example from. For example:
-
-     `https:localhost:8000/auth/`
+   * RedirectURI that matches the URI you are running the example from. For example, `https:localhost:8000/auth/`
 
    * Scopes. ie, `WorldCatMetadataAPI` for the Django example provided with this library.
+
 1. We use runsslserver to start Django from the project's root directory:
 
     `python manage.py runsslserver`
