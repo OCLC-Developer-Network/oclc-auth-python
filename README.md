@@ -47,7 +47,7 @@ First, we need to install these dependencies:
 An alternate method popular with Django developers is to install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>.
 
    Note: if running stunnel, you should edit djangoProject/settings.py and remove the reference to sslserver:
-
+   <pre>
        INSTALLED_APPS = (
            'django.contrib.admin',
            'django.contrib.auth',
@@ -58,6 +58,7 @@ An alternate method popular with Django developers is to install <a href="http:/
            'exampleAuthTokenDjangoApp',
            'sslserver', # remove if using Stunnel
        )
+   </pre>
 
 1. Edit `exampleAuthTokenDjangoApp/views.py` and insert your Key and Secret.
    Note that your WSKey must be configured with these parameters:
