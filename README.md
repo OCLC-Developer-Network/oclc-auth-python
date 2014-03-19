@@ -52,9 +52,9 @@ An alternate method popular with Django developers is to install <a href="http:/
 
         * RedirectURI that matches the URI you are running the example from. For example:
 
-        `https:localhost:8000/auth/`
+        https:localhost:8000/auth/
 
-        * Scopes. ie, `WorldCatMetadataAPI` for the Django example provided with this library.
+        * Scopes. ie, WorldCatMetadataAPI for the Django example provided with this library.
 
     Now instead of using runserver, we use runsslserver to start Django from the project's root directory:
 
