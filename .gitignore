@@ -21,3 +21,4 @@ lib64
 # project
 main.py
 credentials.txt
+security.sh

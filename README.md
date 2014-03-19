@@ -46,7 +46,7 @@ First, we need to install these dependencies:
 1. To run SSL from localhost, install a <a href="https://github.com/teddziuba/django-sslserver">django-sslserver<a/>.<br>`sudo pip install django-sslserver`<br>
 An alternate method popular with Django developers is to install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>.
 
-   Note: if running stunnel, you should edit djangoProject/settings.py and remove the reference to sslserver:
+   Note: if running stunnel, you should edit djangoProject/settings.py and remove the reference to <strong>sslserver</strong>:
    <pre>
        INSTALLED_APPS = (
            'django.contrib.admin',
