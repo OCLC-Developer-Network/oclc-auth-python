@@ -47,12 +47,9 @@ First, we need to install these dependencies:
 An alternate method popular with Django developers is to install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>.
 
 1. Edit `exampleAuthTokenDjangoApp/views.py` and insert your Key and Secret.
-
    Note that your WSKey must be configured with these parameters:
-
-   * RedirectURI that matches the URI you are running the example from. For example, `https:localhost:8000/auth/`
-
-   * Scopes. ie, `WorldCatMetadataAPI` for the Django example provided with this library.
+   * RedirectURI that matches the URI you are running the example from. For example, <strong>https:localhost:8000/auth/</strong>
+   * Scopes. ie, </strong>WorldCatMetadataAPI</strong> for the Django example provided with this library.
 
 1. We use runsslserver to start Django from the project's root directory:
 
