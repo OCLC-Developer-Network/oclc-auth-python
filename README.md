@@ -6,7 +6,7 @@ This library is a wrapper around the Web Service Authentication system used by O
 Installation
 ------------
 
-Download the file: `git clone https://github.com/OCLC-Developer-Network/oclc-auth-php.git`
+Download the file: `git clone https://github.com/OCLC-Developer-Network/oclc-auth-python.git`
 
 Here is a description of the folders
 
