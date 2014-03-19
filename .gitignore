@@ -1,0 +1,23 @@
+# PyCharm IDE
+.idea
+
+# mac osx
+.DS_Store
+
+# python
+*.pyc
+*.pyo
+.installed.cfg
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
+lib
+lib64
+
+# project
+main.py
+credentials.txt
