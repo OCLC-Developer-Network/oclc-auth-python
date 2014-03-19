@@ -46,6 +46,19 @@ First, we need to install these dependencies:
 1. To run SSL from localhost, install a <a href="https://github.com/teddziuba/django-sslserver">django-sslserver<a/>.<br>`sudo pip install django-sslserver`<br>
 An alternate method popular with Django developers is to install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>.
 
+   Note: if running stunnel, you should edit djangoProject/settings.py and remove the reference to sslserver:
+
+       INSTALLED_APPS = (
+           'django.contrib.admin',
+           'django.contrib.auth',
+           'django.contrib.contenttypes',
+           'django.contrib.sessions',
+           'django.contrib.messages',
+           'django.contrib.staticfiles',
+           'exampleAuthTokenDjangoApp',
+           'sslserver', # remove if using Stunnel
+       )
+
 1. Edit `exampleAuthTokenDjangoApp/views.py` and insert your Key and Secret.
    Note that your WSKey must be configured with these parameters:
    * RedirectURI that matches the URI you are running the example from. For example, <strong>https:localhost:8000/auth/</strong>

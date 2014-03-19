@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'exampleAuthTokenDjangoApp',
-    'sslserver',
+    'sslserver', # remove if using Stunnel
 )
 
 MIDDLEWARE_CLASSES = (
