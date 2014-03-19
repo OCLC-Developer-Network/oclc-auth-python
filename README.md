@@ -69,7 +69,7 @@ An alternate method popular with Django developers is to install <a href="http:/
 
     `python manage.py runsslserver`
 
-1. Direct your browser to `https://localhost/auth/`.
+1. Direct your browser to `https://localhost:8000/auth/`.
 
 1. If all goes well, you should see some authentication warnings (that's expected - we're running localhost with a self
 signed CACERT. Click through these and you should see an authentication screen. Sign in, and click to allow access, and
