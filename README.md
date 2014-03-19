@@ -56,9 +56,10 @@ An alternate method popular with Django developers is to install <a href="http:/
 
     * Scopes. ie, `WorldCatMetadataAPI` for the Django example provided with this library.
 
-    Now instead of using runserver, we use runsslserver to start Django from the project's root directory:
+1. We use runsslserver to start Django from the project's root directory:
 
     `python manage.py runsslserver`
+
 1. Direct your browser to `https://localhost/auth/`.
 
 1. If all goes well, you should see some authentication warnings (that's expected - we're running localhost with a self
