@@ -6,7 +6,7 @@ This library is a wrapper around the Web Service Authentication system used by O
 Installation
 ------------
 
-Download the file: `git clone https://github.com/OCLC-Developer-Network/oclc-auth-php.git`
+Download the file: `git clone https://github.com/OCLC-Developer-Network/oclc-auth-python.git`
 
 Here is a description of the folders
 
@@ -69,7 +69,7 @@ An alternate method popular with Django developers is to install <a href="http:/
 
     `python manage.py runsslserver`
 
-1. Direct your browser to `https://localhost/auth/`.
+1. Direct your browser to `https://localhost:8000/auth/`.
 
 1. If all goes well, you should see some authentication warnings (that's expected - we're running localhost with a self
 signed CACERT. Click through these and you should see an authentication screen. Sign in, and click to allow access, and
