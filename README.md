@@ -55,7 +55,7 @@ First, we need to install these dependencies:
 1. To run SSL from localhost, install a <a href="https://github.com/teddziuba/django-sslserver">django-sslserver<a/>.<br>`sudo pip install django-sslserver`<br>
 An alternate method popular with Django developers is to install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>.
 
-   Note: if running stunnel, you should edit djangoProject/settings.py and remove the reference to <strong>sslserver</strong>:
+   Note: if running stunnel, you should edit `djangoProject/settings.py` and remove the reference to <strong>sslserver</strong>:
    <pre>
        INSTALLED_APPS = (
            'django.contrib.admin',
@@ -74,16 +74,19 @@ An alternate method popular with Django developers is to install <a href="http:/
    * RedirectURI that matches the URI you are running the example from. For example, <strong>https://localhost:8000/auth/</strong>
    * Scopes. ie, <strong>WorldCatMetadataAPI</strong> for the Django example provided with this library.
 
-1. We use runsslserver to start Django from the project's root directory:
+1. Use runsslserver to start Django's SSL server from the root directory:
 
     `python manage.py runsslserver`
 
 1. Direct your browser to `https://localhost:8000/auth/`.
 
 1. If all goes well, you should see some authentication warnings (that's expected - we're running localhost with a self
-signed CACERT. Click through these and you should see an authentication screen. Sign in, and click to allow access, and
-you should see your Access Token details as well as a Bibliographic Record returned using your authentication parameters.
+signed CACERT). Click through these and you should see an authentication screen.
 
+* Sign in with your userId and Password
+* When prompted to allow access, click yes
+
+You should see your access token details and a sample Bibliographic record, in XML format.
 
 Using the Library
 =================
@@ -117,13 +120,11 @@ authenticatingInstitutionID = '{institutionID}'
 Next, you need to construction a request URL. OCLC Web Services <a href="http://www.oclc.org/developer/develop/web-services.en.html">are documented here</a>. For example, to request a Bibliographic Record, your URL request might look like this:
 
 <pre>
-requestUrl = 'https://worldcat.org/bib/data/823520553?
-              classificationScheme=LibraryOfCongress
-              &holdingLibraryCode=MAIN'
+requestUrl = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
 </pre>
 
-Now you build your <strong>wskey</strong> and <strong>user</strong> objects. For more information on the wskey options,
-see the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/blob/master/authliboclc/wskey.py">wskey.py</a> file in the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/tree/master/authliboclc">authliboclc</a> library folder.
+Now you build your <strong>wskey</strong> and <strong>user</strong> objects. The options are meant for access token use and you do not need to add them for this example.
+See the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/blob/master/authliboclc/wskey.py">wskey.py</a> file in the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/tree/master/authliboclc">authliboclc</a> library folder.
 
 <pre>
 myWskey = wskey.Wskey(**{
@@ -138,7 +139,7 @@ myUser = user.User(**{
 })
 </pre>
 
-Now we let the library calculate the Authorization header for us:
+Calculate the Authorization header:
 
 <pre>
 authorizationHeader = myWskey.getHMACSignature(**{
@@ -151,9 +152,7 @@ authorizationHeader = myWskey.getHMACSignature(**{
 </pre>
 
 With our request URL and Authorization header prepared, we are ready to use Python's <strong>urllib2</strong>
-library to make the GET request. Note that by specifying the request's data parameter as "None", we are making a GET
-request. Many requests require posting XML or JSON data, which would be placed in the data parameter, and cause a POST
-to occur automatically. You can also force a POST with no data by setting the request's data parameter to empty string.
+library to make the GET request.
 
 <pre>
 myRequest = urllib2.Request(**{
@@ -169,6 +168,8 @@ try:
 except urllib2.HTTPError, e:
     print ('** ' + str(e) + ' **')
 </pre>
+
+You should get a string containing an xml object, or an error message if a parameter is wrong or the WSKey is not configured properly.
 
 User Authentication with Access Tokens
 --------------------------------------
@@ -189,16 +190,17 @@ Install a test SSL server in localhost:
 sudo pip install django-sslserver
 </pre>
 
-You can run my django project at `https://localhost:8000/auth/` by typing:
+You can run the django from the project root directory by typing:
 
 <pre>
 python manage.py runsslserver
 </pre>
 
-Instead of the test ssl server, you can install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>.
+Point your browser to `https://localhost:8000/auth/` to see the output from the apps view.py file.
 
-Once you get your localhost SSL environment set up and working, you can use the <a>authliboclc</a> library to work with
-authentication parameters.
+Optional: Instead of the test django-sslserver server, you can install <a href="http://blog.isotoma.com/2012/07/running-a-django-dev-instance-over-https/">Stunnel</a>. We leave that up to the experienced Python Developer.
+
+Once you get your localhost SSL environment set up and working, you can use the <a>authliboclc</a> library to handle the access token and user authentication patterns.
 
 The imports for working with the authentication library inside a Django view look like this:
 
@@ -216,9 +218,8 @@ Explicit Authorization Code</a> pattern in the <strong>authliboclc</strong> libr
 #### Request an Authorization Code.
 
 An Authorization Code
-is a unique string which represents the fact a user has successfully authenticated and granted an application the right
-to access a web service and data for a particular institution.  Authorization Codes are exchanged by clients in order
-to obtain Access Tokens.
+is a unique string which is returned in the url after a user has successfully authenticated. The Authorization Code will then be
+exchanged by the client to obtain Access Tokens:
 
 1. You need to gather your authentication parameters:
     * key
@@ -259,7 +260,7 @@ An Access Token is a unique string which the client will send to the web service
 Access Token represents a particular application’s right to access set of web services, on behalf of a given user in
 order to read or write data associated with a specific institution during a specific time period.
 
-1. This library function takes the code and makes the Access Token request, returning the Access Token object.
+1. This library function takes the <strong>code</strong> and makes the Access Token request, returning the Access Token object.
     <pre>
     accessToken = myWskey.getAccessTokenWithAuthCode(**{
         'code': code,
@@ -277,6 +278,7 @@ order to read or write data associated with a specific institution during a spec
     * user
         * principalID
         * principalIDNS
+        * authenticatingInstitutionId
     * contextInstitutionId
     * errorCode
 
