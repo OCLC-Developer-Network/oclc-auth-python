@@ -62,7 +62,7 @@ An alternate method popular with Django developers is to install <a href="http:/
 
 1. Edit `exampleAuthTokenDjangoApp/views.py` and insert your Key and Secret.
    Note that your WSKey must be configured with these parameters:
-   * RedirectURI that matches the URI you are running the example from. For example, <strong>https:localhost:8000/auth/</strong>
+   * RedirectURI that matches the URI you are running the example from. For example, <strong>https://localhost:8000/auth/</strong>
    * Scopes. ie, <strong>WorldCatMetadataAPI</strong> for the Django example provided with this library.
 
 1. We use runsslserver to start Django from the project's root directory:
