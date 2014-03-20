@@ -258,6 +258,21 @@ class WskeyTests(unittest.TestCase):
         """ Neither User nor Auth params exist."""
         self.assertEqual(self._myWskey.AddAuthParams(**{'user': None, 'authParams': None}), '')
 
+    """Test that the string representation of the class is complete."""
+
+    def testStringRepresenationOfClass(self):
+        self.assertEqual(str(self._myWskey), (
+            "\tkey:\t\tCancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM\n" +
+            "\tsecret:\t\tYeZfIJdGYUeatxQOjekRZw==\n" +
+            "\tredirectUri:\thttp://www.oclc.org/test\n" +
+            "\tservices:\t['WMS_NCIP', 'WMS_ACQ']\n" +
+            "\tdebugTimestamp:\tNone\n" +
+            "\tdebugNonce:\tNone\n" +
+            "\tbodyHash:\tNone\n" +
+            "\tauthParams:\tNone\n" +
+            "\tuser:\t\tNone\n")
+        )
+
 
 def main():
     unittest.main()

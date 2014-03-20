@@ -23,9 +23,8 @@ from authliboclc import refreshtoken
 
 
 class AccessTokenTests(unittest.TestCase):
-    _myAccessToken = None;
-
     """ Create a mock access token. """
+
     def setUp(self):
         self._options = {'scope': ['WMS_NCIP', 'WMS_ACQ'],
                          'authenticatingInstitutionId': '128807',
@@ -43,6 +42,7 @@ class AccessTokenTests(unittest.TestCase):
                          'Unexpected authorization server endpoint: ' + self._myAccessToken.authorizationServer)
 
     """ Make sure only the correct valid access token options are listed. """
+
     def testValidOptions(self):
         options = accesstoken.AccessToken.validOptions
         validOptions = [
@@ -58,6 +58,7 @@ class AccessTokenTests(unittest.TestCase):
                          'code and refreshToken')
 
     """ Make sure the list of valid grant types is correct. """
+
     def testValidGrantTypes(self):
         grantTypes = accesstoken.AccessToken.validGrantTypes
         validGrantTypes = [
@@ -69,6 +70,7 @@ class AccessTokenTests(unittest.TestCase):
                                                       'client_credentials')
 
     """ Check that attempts to create Access Tokens work, and incorrect parameters raise exceptions. """
+
     def testCreateAccessToken(self):
         self.assertEqual(self._myAccessToken.scope, ['WMS_NCIP', 'WMS_ACQ'])
         self.assertEqual(self._myAccessToken.authenticatingInstitutionId, '128807')
@@ -115,6 +117,7 @@ class AccessTokenTests(unittest.TestCase):
                                                            'scope': 'WMS_ACQ'})
 
     """ Make sure an expired token is calculated properly. """
+
     def testIsExpired(self):
         self._myAccessToken.expiresAt = '2014-01-01 12:00:00Z'
         self.assertTrue(self._myAccessToken.isExpired())
@@ -123,6 +126,7 @@ class AccessTokenTests(unittest.TestCase):
         self.assertFalse(self._myAccessToken.isExpired())
 
     """ Test creation of an access token for authorization_code. """
+
     def testGetAccessTokenURLforAuthorizationCode(self):
         myAT = accesstoken.AccessToken('authorization_code', self._options)
         self.assertEqual(myAT.getAccessTokenURL(), (
@@ -135,6 +139,7 @@ class AccessTokenTests(unittest.TestCase):
         )
 
     """ Test creation of an access token for client_credentials. """
+
     def testGetAccessTokenURLforClientCredentials(self):
         myAT = accesstoken.AccessToken('client_credentials', self._options)
         self.assertEqual(myAT.getAccessTokenURL(), (
@@ -146,6 +151,7 @@ class AccessTokenTests(unittest.TestCase):
         )
 
     """ Test creation of an access token for refresh_token. """
+
     def testGetAccessTokenURLforRefreshToken(self):
         myAT = accesstoken.AccessToken('refresh_token', self._options)
         self.assertEqual(myAT.getAccessTokenURL(), (
@@ -154,6 +160,7 @@ class AccessTokenTests(unittest.TestCase):
             '&refresh_token=tk_1234'))
 
     """ Create a mock token response and verify parsing is corrent. """
+
     def testParseTokenResponse(self):
         myAT = accesstoken.AccessToken('authorization_code', self._options)
         myAT.parseTokenResponse(
@@ -199,6 +206,31 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(expectedRefreshToken.expiresIn, myAT.refreshToken.expiresIn)
         self.assertEqual(expectedRefreshToken.expiresAt, myAT.refreshToken.expiresAt)
 
+    """Test that the string representation of the class is complete."""
+    def testStringRepresenationOfClass(self):
+        self.assertEqual(str(self._myAccessToken), (
+            'accessTokenUrl:\t\t\thttps://authn.sd00.worldcat.org/oauth2/accessToken?\n' +
+            '\t\t\t\tgrant_type=authorization_code\n' +
+            '\t\t\t\t&code=unknown\n' +
+            '\t\t\t\t&authenticatingInstitutionId=128807\n' +
+            '\t\t\t\t&contextInstitutionId=128808\n' +
+            '\t\t\t\t&redirect_uri=ncip%3A%2F%2Ftestapp\n' +
+            'authenticatingInstitutionId:\t128807\n' +
+            'authorizationServer:\t\thttps://authn.sd00.worldcat.org/oauth2\n' +
+            'code:\t\t\t\tunknown\n' +
+            'contextInstitutionId:\t\t128808\n' +
+            'errorCode:\t\tNone\n' +
+            'errorMessage:\t\t\tNone\n' +
+            'expiresAt:\t\t\tNone\n' +
+            'expiresIn:\t\t\tNone\n' +
+            'grantType:\t\t\tauthorization_code\n' +
+            'options:\t\t\tNone\n' + 'redirectUri:\t\t\tncip://testapp\n' +
+            'refreshToken:tk_1234\n' +
+            'scope:\t[\'WMS_NCIP\', \'WMS_ACQ\']\n' +
+            'type:\t\t\t\tNone\n' +
+            'user:None\n' +
+            'wskey:None\n')
+        )
 
 def main():
     unittest.main()

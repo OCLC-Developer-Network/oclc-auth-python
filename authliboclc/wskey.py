@@ -37,6 +37,8 @@ import base64
 import collections
 import copy
 
+SIGNATURE_URL = 'https://www.oclc.org/wskey'
+
 
 class InvalidObject(Exception):
     """Custom exception - invalid object was passed to class"""
@@ -311,7 +313,7 @@ class Wskey(object):
         Returns:
             normalizedRequest: string, the normalized request to be hashed
         """
-        signatureUrl = 'https://www.oclc.org/wskey'
+        signatureUrl = SIGNATURE_URL
         parsedSignatureUrl = urlparse(urllib.unquote(signatureUrl).decode('utf-8'))
         parsedRequestUrl = urlparse(urllib.unquote(requestUrl).decode('utf-8'))
 
@@ -393,3 +395,16 @@ class Wskey(object):
                 authValuePairs += '",'
 
         return authValuePairs
+
+    def __str__(self):
+        ret = ''
+        ret += '\tkey:\t\t' + str(self.key) + "\n"
+        ret += '\tsecret:\t\t' + str(self.secret) + "\n"
+        ret += '\tredirectUri:\t' + str(self.redirectUri) + "\n"
+        ret += '\tservices:\t' + str(self.services) + "\n"
+        ret += '\tdebugTimestamp:\t' + str(self.debugTimestamp) + "\n"
+        ret += '\tdebugNonce:\t' + str(self.debugNonce) + "\n"
+        ret += '\tbodyHash:\t' + str(self.bodyHash) + "\n"
+        ret += '\tauthParams:\t' + str(self.authParams) + "\n"
+        ret += '\tuser:\t\t' + str(self.user) + "\n"
+        return ret

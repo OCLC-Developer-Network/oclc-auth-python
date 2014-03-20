@@ -77,6 +77,14 @@ class RefreshTokenTests(unittest.TestCase):
         self._myRefreshToken.expiresAt = '2099-01-01 12:00:00Z'
         self.assertFalse(self._myRefreshToken.isExpired())
 
+    """Test that the string representation of the class is complete."""
+
+    def testStringRepresenationOfClass(self):
+        self.assertEqual(str(self._myRefreshToken), (
+            '\trefreshToken:\trt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
+            '\t\texpiresIn:\t1199\n' +
+            '\t\texpiresAt:\t2014-03-13 15:44:59Z\n'))
+
 
 def main():
     unittest.main()

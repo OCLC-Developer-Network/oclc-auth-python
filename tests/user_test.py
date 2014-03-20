@@ -21,8 +21,15 @@ from authliboclc import user
 
 
 class UserTests(unittest.TestCase):
+    def setUp(self):
+        self._user = user.User(**{
+            'principalID': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
+            'principalIDNS': 'urn:oclc:wms:da',
+            'authenticatingInstitutionID': '128807'
+        })
 
     """ Test that the creation of the user object incorrect parameters raise exceptions."""
+
     def testCreateUserExceptions(self):
         with self.assertRaises(user.InvalidParameter):
             user.User()
@@ -61,16 +68,20 @@ class UserTests(unittest.TestCase):
             })
 
     """ Make sure that parameters are saved properly for a correctly created user."""
-    def testCreateUser(self):
-        myUser = user.User(**{
-            'principalID': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
-            'principalIDNS': 'urn:oclc:wms:da',
-            'authenticatingInstitutionID': '128807'
-        })
 
-        self.assertEqual(myUser.principalID, '8eaa9f92-3951-431c-975a-e5dt26b7d232')
-        self.assertEqual(myUser.principalIDNS, 'urn:oclc:wms:da')
-        self.assertEqual(myUser.authenticatingInstitutionID, '128807')
+    def testCreateUser(self):
+        self.assertEqual(self._user.principalID, '8eaa9f92-3951-431c-975a-e5dt26b7d232')
+        self.assertEqual(self._user.principalIDNS, 'urn:oclc:wms:da')
+        self.assertEqual(self._user.authenticatingInstitutionID, '128807')
+
+    """Test that the string representation of the class is complete."""
+
+    def testStringRepresenationOfClass(self):
+        self.assertEqual(str(self._user), (
+            '\tprincipalID:\t\t\t8eaa9f92-3951-431c-975a-e5dt26b7d232\n' +
+            '\tprincipalIDNS:\t\t\turn:oclc:wms:da\n' +
+            '\tauthenticatingInstitutionID:\t128807\n')
+        )
 
 
 def main():

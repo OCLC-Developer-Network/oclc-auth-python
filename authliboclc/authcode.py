@@ -27,8 +27,12 @@ __author__ = 'campbelg@oclc.org (George Campbell)'
 from urlparse import urlparse
 import urllib
 
+AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
+
+
 class InvalidParameter(Exception):
     """Custom exception - invalid parameter was passed to class"""
+
     def __init__(self, message):
         self.message = message
 
@@ -50,7 +54,7 @@ class AuthCode(object):
         redirectUri                   string   the redirectUri for the request
         scopes                        list     a list of one or more web services
     """
-    authorizationServer = 'https://authn.sd00.worldcat.org/oauth2'
+    authorizationServer = AUTHORIZATION_SERVER
     clientId = None
     authenticatingInstitutionId = None
     contextInstitutionId = None
@@ -121,3 +125,14 @@ class AuthCode(object):
             '&' + 'response_type=code' +
             '&' + 'scope=' + " ".join(self.scopes)
         )
+
+    def __str__(self):
+        ret = ''
+        ret += '\tauthorizationServer: ' + str(self.authorizationServer) + "\n"
+        ret += '\tclientId: ' + str(self.clientId) + "\n"
+        ret += '\tauthenticatingInstitutionId: ' + str(self.authenticatingInstitutionId) + "\n"
+        ret += '\tcontextInstitutionId: ' + str(self.contextInstitutionId) + "\n"
+        ret += '\tredirectUri: ' + str(self.redirectUri) + "\n"
+        ret += '\tscopes: ' + str(self.scopes) + "\n"
+
+        return ret

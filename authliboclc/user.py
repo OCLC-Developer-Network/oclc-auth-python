@@ -64,3 +64,10 @@ class User(object):
         self.authenticatingInstitutionID = authenticatingInstitutionID
         self.principalID = principalID
         self.principalIDNS = principalIDNS
+
+    def __str__(self):
+        ret = ''
+        ret += '\tprincipalID:\t\t\t' + str(self.principalID) + "\n"
+        ret += '\tprincipalIDNS:\t\t\t' + str(self.principalIDNS) + "\n"
+        ret += '\tauthenticatingInstitutionID:\t' + str(self.authenticatingInstitutionID) + "\n"
+        return ret

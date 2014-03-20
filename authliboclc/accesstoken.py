@@ -35,6 +35,7 @@ import urllib2
 import json
 from refreshtoken import RefreshToken
 
+AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
 
 class InvalidGrantType(Exception):
     """Custom exception - an invalid grant type was passed"""
@@ -77,19 +78,21 @@ class AccessToken(object):
         contextInstitutionId          string   the institutionID the user makes requests against
         errorCode                     int      the code, ie 401, if an access token fails. Normally None.
         errorMessage                  string   the error message associated with the error code. Normally None.
+        errorUrl                      string   the request url that had the error
         expiresAt                     string   the ISO 8601 time that the refresh token expires at
         expiresIn                     int      the number of seconds until the token expires
         grantType                     string
-        options                       dict: Valid options are:
-                                      - scope
-                                      - authenticatingInstitutionId
-                                      - contextInstitutionId
-                                      - redirectUri
-                                      - code
-                                      - refreshToken
+        options                       dict:    Valid options are:
+                                               - scope
+                                               - authenticatingInstitutionId
+                                               - contextInstitutionId
+                                               - redirectUri
+                                               - code
+                                               - refreshToken
         redirectUri                   string   string, the url that client authenticates from ie, https://localhost:8000/auth/
         refreshToken                  string   the refresh token object, see refreshtoken.py in the authliboclc folder.
         scope                         list     web services associated with the WSKey, ie ['WorldCatMetadataAPI']
+        type                          str      token type, for our use case it is always "bearer"
         user                          object   user object, see user.py in the authliboclc folder.
         wskey                         object   wskey object, see wskey.py in the authliboclc folder.
 
@@ -98,11 +101,12 @@ class AccessToken(object):
     accessTokenString = None
     accessTokenUrl = None
     authenticatingInstitutionId = None
-    authorizationServer = 'https://authn.sd00.worldcat.org/oauth2'
+    authorizationServer = AUTHORIZATION_SERVER
     code = None
     contextInstitutionId = None
     errorCode = None
     errorMessage = None
+    errorUrl = None
     expiresAt = None
     expiresIn = None
     grantType = None
@@ -110,6 +114,7 @@ class AccessToken(object):
     redirectUri = None
     refreshToken = None
     scope = None
+    type = None
     user = None
     wskey = None
 
@@ -241,7 +246,7 @@ class AccessToken(object):
             self.parseTokenResponse(result.read())
 
         except urllib2.HTTPError, e:
-            print ('** ' + str(e) + ' **')
+            self.parseErrorResponse(e)
 
     def getAccessTokenURL(self):
         """ get Access Token URL """
@@ -280,8 +285,6 @@ class AccessToken(object):
         self.expiresIn = responseJSON.get('expires_in', None)
         self.contextInstitutionId = responseJSON.get('context_institution_id', None)
         self.errorCode = responseJSON.get('error_code', None)
-        if self.errorCode == None:
-            self.errorCode = ""
 
         principalID = responseJSON.get('principalID', None)
         principalIDNS = responseJSON.get('principalIDNS', None)
@@ -301,3 +304,31 @@ class AccessToken(object):
                 'expiresIn': responseJSON.get('refresh_token_expires_in', None),
                 'expiresAt': responseJSON.get('refresh_token_expires_at', None)
             })
+
+    def parseErrorResponse(self, httpError):
+        self.errorCode = httpError.getcode()
+        self.errorMessage = str(httpError)
+        self.errorUrl = httpError.geturl()
+        return ''
+
+    def __str__(self):
+        ret = 'accessTokenUrl:\t\t\t' + str(self.accessTokenUrl).replace('?', '?\n\t\t\t\t').replace('&',
+                                                                                                     '\n\t\t\t\t&') + "\n"
+        ret += 'authenticatingInstitutionId:\t' + str(self.authenticatingInstitutionId) + "\n"
+        ret += 'authorizationServer:\t\t' + str(self.authorizationServer) + "\n"
+        ret += 'code:\t\t\t\t' + str(self.code) + "\n"
+        ret += 'contextInstitutionId:\t\t' + str(self.contextInstitutionId) + "\n"
+        ret += 'errorCode:\t\t' + str(self.errorCode) + "\n"
+        ret += 'errorMessage:\t\t\t' + str(self.errorMessage) + "\n"
+        ret += 'expiresAt:\t\t\t' + str(self.expiresAt) + "\n"
+        ret += 'expiresIn:\t\t\t' + str(self.expiresIn) + "\n"
+        ret += 'grantType:\t\t\t' + str(self.grantType) + "\n"
+        ret += 'options:\t\t\t' + str(self.options) + "\n"
+        ret += 'redirectUri:\t\t\t' + str(self.redirectUri) + "\n"
+        ret += 'refreshToken:' + str(self.refreshToken) + "\n"
+        ret += 'scope:\t' + str(self.scope) + "\n"
+        ret += 'type:\t\t\t\t' + str(self.type) + "\n"
+        ret += 'user:' + str(self.user) + "\n"
+        ret += 'wskey:' + str(self.wskey) + "\n"
+
+        return ret

@@ -21,10 +21,20 @@ from authliboclc import authcode
 
 
 class AuthCodeTests(unittest.TestCase):
+    def setUp(self):
+        self._authCode = authcode.AuthCode(**{
+            'clientId': '1234ABCD',
+            'authenticatingInstitutionId': '128807',
+            'contextInstitutionId': '128808',
+            'redirectUri': 'http://www.oclc.org/test',
+            'scopes': ['WMS_NCIP', 'WMS_ACQ']
+        })
+
     def testAuthorizationServer(self):
         self.assertEqual(authcode.AuthCode.authorizationServer, 'https://authn.sd00.worldcat.org/oauth2')
 
     """ Test Create AuthCode - incorrect parameters should raise exceptions."""
+
     def testCreateAuthCode(self):
         with self.assertRaises(authcode.InvalidParameter):
             authcode.AuthCode()
@@ -103,15 +113,8 @@ class AuthCodeTests(unittest.TestCase):
         self.assertEqual(myAuthCode.scopes[1], 'WMS_ACQ')
 
     """ Verify that a proper login url to get the access token is generated."""
-    def testGetLoginUrl(self):
-        myAuthCode = authcode.AuthCode(**{
-            'clientId': '1234ABCD',
-            'authenticatingInstitutionId': '128807',
-            'contextInstitutionId': '128808',
-            'redirectUri': 'http://www.oclc.org/test',
-            'scopes': ['WMS_NCIP', 'WMS_ACQ']
-        })
 
+    def testGetLoginUrl(self):
         expectedResult = (
             'https://authn.sd00.worldcat.org/oauth2/authorizeCode' +
             '?authenticatingInstitutionId=128807' +
@@ -122,7 +125,19 @@ class AuthCodeTests(unittest.TestCase):
             '&scope=WMS_NCIP WMS_ACQ'
         )
 
-        self.assertEqual(myAuthCode.getLoginUrl(), expectedResult)
+        self.assertEqual(self._authCode.getLoginUrl(), expectedResult)
+
+    """Test that the string representation of the class is complete."""
+
+    def testStringRepresenationOfClass(self):
+        self.assertEqual(str(self._authCode), (
+            '\tauthorizationServer: https://authn.sd00.worldcat.org/oauth2\n' +
+            '\tclientId: 1234ABCD\n' +
+            '\tauthenticatingInstitutionId: 128807\n' +
+            '\tcontextInstitutionId: 128808\n' +
+            '\tredirectUri: http://www.oclc.org/test\n' +
+            '\tscopes: [\'WMS_NCIP\', \'WMS_ACQ\']\n')
+        )
 
 
 def main():

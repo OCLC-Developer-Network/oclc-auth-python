@@ -46,8 +46,9 @@ def index(request):
         <style>
             body {width:800px; margin:auto}
             h1 {font-size: 150%}
+            td {vertical-align:top}
             .error {line-height: 140%; background-color: lightcoral; padding: 3px 20px; border-radius: 12px}
-            pre {font-size: 83%}
+            pre {font-size: 83%; margin-top:0}
         </style>
     </head>
     <body>
@@ -90,7 +91,7 @@ def index(request):
     errorDescription = request.GET.get('error_description', None)
 
     if error != None:
-        """If an error exists, display it."""
+        """If an error was returned, display it."""
         response.write('<p class="error">Error: ' + error + '<br>' + errorDescription + '</p>')
 
     elif accessToken == None and code == None:
@@ -110,26 +111,35 @@ def index(request):
             'authenticatingInstitutionId': '128807',
             'contextInstitutionId': '128807'
         })
-        request.session['accessToken'] = pickle.dumps(accessToken)
-        response.write('<p><strong>Access Token</strong> NOT FOUND in this session, so I requested a new one.</p>')
+
+        if accessToken.errorCode == None:
+            request.session['accessToken'] = pickle.dumps(accessToken)
+            response.write('<p><strong>Access Token</strong> NOT FOUND in this session, so I requested a new one.</p>')
+
         response.write(formatAccessToken(**{
             'accessToken': accessToken
         }))
-        response.write(getBibRecord(**{
-            'accessToken': accessToken,
-            'wskey': myWskey
-        }))
+
+        if accessToken.errorCode == None:
+            response.write(getBibRecord(**{
+                'accessToken': accessToken,
+                'wskey': myWskey
+            }))
 
     elif accessToken != None:
         """We already have an Access Token, so display the token and request a Bibliographic Record"""
-        response.write('<p><strong>Access Token</strong> found in this session, and it is still valid.</p>')
+        if accessToken.errorCode == None:
+            response.write('<p><strong>Access Token</strong> found in this session, and it is still valid.</p>')
+
         response.write(formatAccessToken(**{
             'accessToken': accessToken
         }))
-        response.write(getBibRecord(**{
-            'accessToken': accessToken,
-            'wskey': myWskey
-        }))
+
+        if accessToken.errorCode == None:
+            response.write(getBibRecord(**{
+                'accessToken': accessToken,
+                'wskey': myWskey
+            }))
 
     return response
 
@@ -141,19 +151,28 @@ def formatAccessToken(accessToken):
     ret = '<h2>Access Token</h2>'
 
     ret += '<table class="pure-table">'
-    ret += '<tr><td>access_token</td><td>' + str(accessToken.accessTokenString) + '</td></tr>'
-    ret += '<tr><td>token_type</td><td>' + str(accessToken.type) + '</td></tr>'
-    ret += '<tr><td>expires_at</td><td>' + str(accessToken.expiresAt) + '</td></tr>'
-    ret += '<tr><td>expires_in</td><td>' + str(accessToken.expiresIn) + '</td></tr>'
-    ret += '<tr><td>principalIDNS</td><td>' + str(accessToken.user.principalID) + '</td></tr>'
-    ret += '<tr><td>principalID</td><td>' + str(accessToken.user.principalIDNS) + '</td></tr>'
-    ret += '<tr><td>context_institution_id</td><td>' + str(accessToken.contextInstitutionId) + '</td></tr>'
-    ret += '<tr><td>error_code</td><td>' + str(accessToken.errorCode) + '</td></tr>'
 
-    if accessToken.refreshToken != None:
-        ret += '<tr><td>refresh_token</td><td>' + str(accessToken.refreshToken.refreshToken) + '</td></tr>'
-        ret += '<tr><td>refresh_token_expires_at</td><td>' + str(accessToken.refreshToken.expiresAt) + '</td></tr>'
-        ret += '<tr><td>refresh_token_expires_in</td><td>' + str(accessToken.refreshToken.expiresIn) + '</td></tr>'
+    if accessToken.errorCode != None:
+        ret += '<tr><td>Error Code</td><td>' + str(accessToken.errorCode) + '</td></tr>'
+        ret += '<tr><td>Error Message</td><td>' + str(accessToken.errorMessage) + '</td></tr>'
+        ret += ('<tr><td>Error Url</td><td><pre>' +
+                str(accessToken.errorUrl).replace('?', '?\n').replace('&', '\n&') + '</pre></td></tr>')
+
+    else:
+        ret += '<tr><td>access_token</td><td>' + str(accessToken.accessTokenString) + '</td></tr>'
+        ret += '<tr><td>token_type</td><td>' + str(accessToken.type) + '</td></tr>'
+        ret += '<tr><td>expires_at</td><td>' + str(accessToken.expiresAt) + '</td></tr>'
+        ret += '<tr><td>expires_in</td><td>' + str(accessToken.expiresIn) + '</td></tr>'
+
+        if accessToken.user != None:
+            ret += '<tr><td>principalIDNS</td><td>' + str(accessToken.user.principalID) + '</td></tr>'
+            ret += '<tr><td>principalID</td><td>' + str(accessToken.user.principalIDNS) + '</td></tr>'
+            ret += '<tr><td>context_institution_id</td><td>' + str(accessToken.contextInstitutionId) + '</td></tr>'
+
+        if accessToken.refreshToken != None:
+            ret += '<tr><td>refresh_token</td><td>' + str(accessToken.refreshToken.refreshToken) + '</td></tr>'
+            ret += '<tr><td>refresh_token_expires_at</td><td>' + str(accessToken.refreshToken.expiresAt) + '</td></tr>'
+            ret += '<tr><td>refresh_token_expires_in</td><td>' + str(accessToken.refreshToken.expiresIn) + '</td></tr>'
 
     ret += '</table>'
     return ret

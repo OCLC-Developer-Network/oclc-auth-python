@@ -29,8 +29,10 @@ __author__ = 'campbelg@oclc.org (George Campbell)'
 import time
 from time import mktime
 
+
 class InvalidParameter(Exception):
     """Custom exception - invalid parameter was passed to class"""
+
     def __init__(self, message):
         self.message = message
 
@@ -75,3 +77,11 @@ class RefreshToken(object):
         if mktime(time.strptime(self.expiresAt, "%Y-%m-%d %H:%M:%SZ")) < time.time():
             status = True
         return status
+
+    def __str__(self):
+        ret = ''
+        ret += '\trefreshToken:\t' + str(self.refreshToken) + "\n"
+        ret += '\t\texpiresIn:\t' + str(self.expiresIn) + "\n"
+        ret += '\t\texpiresAt:\t' + str(self.expiresAt) + "\n"
+
+        return ret
