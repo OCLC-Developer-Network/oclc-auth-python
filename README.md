@@ -260,34 +260,33 @@ An Access Token is a unique string which the client will send to the web service
 Access Token represents a particular application’s right to access set of web services, on behalf of a given user in
 order to read or write data associated with a specific institution during a specific time period.
 
-1. This library function takes the <strong>code</strong> and makes the Access Token request, returning the Access Token object.
-    <pre>
+This library function takes the <strong>code</strong> and makes the Access Token request, returning the Access Token object.
+
     accessToken = myWskey.getAccessTokenWithAuthCode(**{
         'code': code,
         'authenticatingInstitutionId': '128807',
         'contextInstitutionId': '128807'
     })
-    </pre>
 
-    The access token object has these parameters:
+The access token object has these parameters:
 
-    * accessTokenString
-    * type
+* accessTokenString
+* type
+* expiresAt (ISO 8601 time)
+* expiresIn (int, seconds)
+* user
+    * principalID
+    * principalIDNS
+    * authenticatingInstitutionI
+* contextInstitutionId
+* errorCode
+
+If you include <strong>refresh_token</strong> as one of the services, you will also get back a refresh token:
+
+* refreshToken
+    * refreshToken (the string value of the token)
     * expiresAt (ISO 8601 time)
     * expiresIn (int, seconds)
-    * user
-        * principalID
-        * principalIDNS
-        * authenticatingInstitutionId
-    * contextInstitutionId
-    * errorCode
-
-    If you include <strong>refresh_token</strong> as one of the services, you will also get back a refresh token:
-
-    * refreshToken
-        * refreshToken (the string value of the token)
-        * expiresAt (ISO 8601 time)
-        * expiresIn (int, seconds)
 
 
 ####Making requests with the Access Token
