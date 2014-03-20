@@ -330,6 +330,10 @@ except urllib2.HTTPError, e:
     xmlResult = str(e)
 </pre>
 
+How come we used the user object with principalID and principalIDNS as our authentication, rather than the Access Token
+itself? Because the Worldcat Metadata API is an older API that does not yet accept Access Tokens. The principalID
+and principalIDNS can only by obtained with the authentication token, so the sign in process was still required.
+
 Resources
 ---------
 
