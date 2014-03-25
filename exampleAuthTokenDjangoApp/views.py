@@ -31,6 +31,10 @@ def index(request):
     key = '{clientID}'
     secret = '{secret}'
 
+    """Default values for the Sandbox Institution. You may want to change them to your institution's values"""
+    authenticatingInstitutionID = '128807'
+    contextInstitutionID = '128807'
+
     """We use the Worldcat Metadata API to test the Access Token"""
     services = ['WorldCatMetadataAPI', 'refresh_token']
 
@@ -97,8 +101,8 @@ def index(request):
     elif accessToken == None and code == None:
         """Initiate user authentication by executing a redirect to the IDM sign in page."""
         loginUrl = myWskey.getLoginUrl(**{
-            'authenticatingInstitutionId': '128807',
-            'contextInstitutionId': '128807'
+            'authenticatingInstitutionId': authenticatingInstitutionID,
+            'contextInstitutionId': contextInstitutionID
         })
         response['Location'] = loginUrl
         response.status_code = '303'
@@ -108,8 +112,8 @@ def index(request):
         """Then request a bibliographic record"""
         accessToken = myWskey.getAccessTokenWithAuthCode(**{
             'code': code,
-            'authenticatingInstitutionId': '128807',
-            'contextInstitutionId': '128807'
+            'authenticatingInstitutionId': authenticatingInstitutionID,
+            'contextInstitutionId': contextInstitutionID
         })
 
         if accessToken.errorCode == None:

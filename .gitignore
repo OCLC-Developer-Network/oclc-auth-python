@@ -22,3 +22,4 @@ lib64
 main.py
 credentials.txt
 security.sh
+switcher.py

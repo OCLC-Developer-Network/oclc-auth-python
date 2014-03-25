@@ -1,4 +1,4 @@
-OCLC Pythen Authentication Library
+OCLC Python Authentication Library
 ==================================
 
 This library is a wrapper around the Web Service Authentication system used by OCLC web services.
@@ -117,7 +117,7 @@ principalIDNS = '{principalIDNS}'
 authenticatingInstitutionID = '{institutionID}'
 </pre>
 
-Next, you need to construction a request URL. OCLC Web Services <a href="http://www.oclc.org/developer/develop/web-services.en.html">are documented here</a>. For example, to request a Bibliographic Record, your URL request might look like this:
+Next, you need to construct a request URL. OCLC Web Services <a href="http://www.oclc.org/developer/develop/web-services.en.html">are documented here</a>. For example, to request a Bibliographic Record, your URL request might look like this:
 
 <pre>
 requestUrl = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
