@@ -9,6 +9,7 @@
 *.pyo
 .installed.cfg
 bin
+build
 develop-eggs
 dist
 downloads
@@ -24,4 +25,3 @@ credentials.txt
 security.sh
 switcher.py
 MANIFEST
-dist/*
