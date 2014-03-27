@@ -28,8 +28,8 @@ import pickle
 
 def index(request):
     """You must fill in the clientID and secret with your WSKey parameters"""
-    key = 'GClgKk9psu7kQ3p9uoAUlrVjNeuO8LWlbBIgdeLTblNb9OjPspImNAUa5KHdAfuwV8x4rEmbPnq83DvH'
-    secret = 'eHg9QAoUCH2utVX4Rovc6Q=='
+    key = '{clientID}'
+    secret = '{secret}'
 
     """Default values for the Sandbox Institution. You may want to change them to your institution's values"""
     authenticating_institution_id = '128807'
