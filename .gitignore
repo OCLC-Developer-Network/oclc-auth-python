@@ -23,3 +23,5 @@ main.py
 credentials.txt
 security.sh
 switcher.py
+MANIFEST
+dist/*

@@ -6,5 +6,5 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
                        url(r'^admin/', include(admin.site.urls)),
-                       url(r'^auth/', include('exampleAuthTokenDjangoApp.urls')),
+                       url(r'^auth/', include('authTokenApp.urls')),
 )

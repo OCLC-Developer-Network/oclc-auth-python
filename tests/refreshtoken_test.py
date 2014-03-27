@@ -28,8 +28,8 @@ class RefreshTokenTests(unittest.TestCase):
     def setUp(self):
         self._myRefreshToken = refreshtoken.RefreshToken(**{
             'tokenValue': 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W',
-            'expiresIn': 1199,
-            'expiresAt': '2014-03-13 15:44:59Z',
+            'expires_in': 1199,
+            'expires_at': '2014-03-13 15:44:59Z',
         })
 
 
@@ -42,48 +42,48 @@ class RefreshTokenTests(unittest.TestCase):
         with self.assertRaises(refreshtoken.InvalidParameter):
             refreshtoken.RefreshToken(**{
                 'tokenValue': 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W',
-                'expiresIn': 1199,
+                'expires_in': 1199,
             })
         with self.assertRaises(refreshtoken.InvalidParameter):
             refreshtoken.RefreshToken(**{
                 'tokenValue': 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W',
-                'expiresAt': '2014-03-13 15:44:59Z',
+                'expires_at': '2014-03-13 15:44:59Z',
             })
         with self.assertRaises(refreshtoken.InvalidParameter):
             refreshtoken.RefreshToken(**{
-                'expiresIn': 1199,
-                'expiresAt': '2014-03-13 15:44:59Z',
+                'expires_in': 1199,
+                'expires_at': '2014-03-13 15:44:59Z',
             })
         with self.assertRaises(refreshtoken.InvalidParameter):
             refreshtoken.RefreshToken(**{
                 'tokenValue': 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W',
-                'expiresIn': '1199',
-                'expiresAt': '2014-03-13 15:44:59Z',
+                'expires_in': '1199',
+                'expires_at': '2014-03-13 15:44:59Z',
             })
 
     """ Make sure the parameters are saved properly when the token is created. """
 
     def testCreateRefreshToken(self):
-        self.assertEqual(self._myRefreshToken.refreshToken, 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W')
-        self.assertEqual(self._myRefreshToken.expiresIn, 1199)
-        self.assertEqual(self._myRefreshToken.expiresAt, '2014-03-13 15:44:59Z')
+        self.assertEqual(self._myRefreshToken.refresh_token, 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W')
+        self.assertEqual(self._myRefreshToken.expires_in, 1199)
+        self.assertEqual(self._myRefreshToken.expires_at, '2014-03-13 15:44:59Z')
 
     """ Test the isExpired calculation."""
 
     def testIsExpired(self):
-        self._myRefreshToken.expiresAt = '2014-01-01 12:00:00Z'
-        self.assertTrue(self._myRefreshToken.isExpired())
+        self._myRefreshToken.expires_at = '2014-01-01 12:00:00Z'
+        self.assertTrue(self._myRefreshToken.is_expired())
 
-        self._myRefreshToken.expiresAt = '2099-01-01 12:00:00Z'
-        self.assertFalse(self._myRefreshToken.isExpired())
+        self._myRefreshToken.expires_at = '2099-01-01 12:00:00Z'
+        self.assertFalse(self._myRefreshToken.is_expired())
 
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
         self.assertEqual(str(self._myRefreshToken), (
-            '\trefreshToken:\trt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
-            '\t\texpiresIn:\t1199\n' +
-            '\t\texpiresAt:\t2014-03-13 15:44:59Z\n'))
+            '\trefresh_token:\trt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
+            '\t\texpires_in:\t1199\n' +
+            '\t\texpires_at:\t2014-03-13 15:44:59Z\n'))
 
 
 def main():

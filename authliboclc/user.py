@@ -23,8 +23,6 @@ principal identifier and principal identifier namespace, along with the authenti
 
 """
 
-__author__ = 'campbelg@oclc.org (George Campbell)'
-
 
 class InvalidParameter(Exception):
     """Custom exception - invalid parameter was passed to class"""
@@ -38,36 +36,36 @@ class User(object):
 
     Class variables:
 
-        principalID                   string   the principal identifier
-        principalIDNS                 string   the principal identifier namespace
-        authenticatingInstitutionId   string   the institutionID that the user is authenticating against
+        principal_id                   string   the principal identifier
+        principal_idns                 string   the principal identifier namespace
+        authenticating_institution_id  string   the institutionID that the user is authenticating against
     """
-    principalID = None
-    principalIDNS = None
-    authenticatingInstitutionID = None
+    principal_id = None
+    principal_idns = None
+    authenticating_institution_id = None
 
-    def __init__(self, authenticatingInstitutionID=None, principalID=None, principalIDNS=None):
+    def __init__(self, authenticating_institution_id=None, principal_id=None, principal_idns=None):
         """Constructor.
 
         Args:
-            authenticatingInstitutionId: string, the institutionID that the user is authenticating against
-            principalID: string, the principal identifier
-            principalIDNS: string, the principal identifier namespace
+            authenticating_institution_id: string, the institutionID that the user is authenticating against
+            principal_id: string, the principal identifier
+            principal_idns: string, the principal identifier namespace
         """
-        if authenticatingInstitutionID == None or authenticatingInstitutionID == '':
+        if authenticating_institution_id == None or authenticating_institution_id == '':
             raise InvalidParameter('You must set a valid Authenticating Institution ID')
-        if principalID == None or principalID == '':
-            raise InvalidParameter('You must set a valid principalID')
-        if principalIDNS == None or principalIDNS == '':
-            raise InvalidParameter('You must set a valid principalIDNS')
+        if principal_id == None or principal_id == '':
+            raise InvalidParameter('You must set a valid principal_id')
+        if principal_idns == None or principal_idns == '':
+            raise InvalidParameter('You must set a valid principal_idns')
 
-        self.authenticatingInstitutionID = authenticatingInstitutionID
-        self.principalID = principalID
-        self.principalIDNS = principalIDNS
+        self.authenticating_institution_id = authenticating_institution_id
+        self.principal_id = principal_id
+        self.principal_idns = principal_idns
 
     def __str__(self):
         ret = ''
-        ret += '\tprincipalID:\t\t\t' + str(self.principalID) + "\n"
-        ret += '\tprincipalIDNS:\t\t\t' + str(self.principalIDNS) + "\n"
-        ret += '\tauthenticatingInstitutionID:\t' + str(self.authenticatingInstitutionID) + "\n"
+        ret += '\tprincipal_id:\t\t\t' + str(self.principal_id) + "\n"
+        ret += '\tprincipal_idns:\t\t\t' + str(self.principal_idns) + "\n"
+        ret += '\tauthenticating_institution_id:\t' + str(self.authenticating_institution_id) + "\n"
         return ret

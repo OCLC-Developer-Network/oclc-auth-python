@@ -21,11 +21,9 @@
 Contains the parameters and methods to handle access tokens. An access token is received by having the user
 authenticate in a web context. Then an authorization code is returned, which is used to retrieve an access
 token from OCLC's servers. Calls against web services for a specific insitution and service are then permitted
-using the access token, or by using the principalID and principalIDNS returned with the user object portion
+using the access token, or by using the principal_id and principal_idns returned with the user object portion
 of the access token.
 """
-
-__author__ = 'campbelg@oclc.org (George Campbell)'
 
 import time
 from time import mktime
@@ -36,6 +34,7 @@ import json
 from refreshtoken import RefreshToken
 
 AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
+
 
 class InvalidGrantType(Exception):
     """Custom exception - an invalid grant type was passed"""
@@ -70,61 +69,60 @@ class AccessToken(object):
 
     Class Variables:
 
-        accessTokenString             string   the value of the access token, ie "at_..."
-        accessTokenUrl                string   the url for requesting an access token
-        authenticatingInstitutionId   string   the institutionID the user authenticates against
-        authorizationServer           string   the url of the OCLC authorization server
-        code                          string   the authentication code string
-        contextInstitutionId          string   the institutionID the user makes requests against
-        errorCode                     int      the code, ie 401, if an access token fails. Normally None.
-        errorMessage                  string   the error message associated with the error code. Normally None.
-        errorUrl                      string   the request url that had the error
-        expiresAt                     string   the ISO 8601 time that the refresh token expires at
-        expiresIn                     int      the number of seconds until the token expires
-        grantType                     string
-        options                       dict:    Valid options are:
-                                               - scope
-                                               - authenticatingInstitutionId
-                                               - contextInstitutionId
-                                               - redirectUri
-                                               - code
-                                               - refreshToken
-        redirectUri                   string   string, the url that client authenticates from ie, https://localhost:8000/auth/
-        refreshToken                  string   the refresh token object, see refreshtoken.py in the authliboclc folder.
-        scope                         list     web services associated with the WSKey, ie ['WorldCatMetadataAPI']
-        type                          str      token type, for our use case it is always "bearer"
-        user                          object   user object, see user.py in the authliboclc folder.
-        wskey                         object   wskey object, see wskey.py in the authliboclc folder.
-
+        access_token_string            string   the value of the access token, ie "at_..."
+        access_token_url               string   the url for requesting an access token
+        authenticating_institution_id  string   the institutionID the user authenticates against
+        authorization_server           string   the url of the OCLC authorization server
+        code                           string   the authentication code string
+        context_institution_id         string   the institutionID the user makes requests against
+        error_code                     int      the code, ie 401, if an access token fails. Normally None.
+        error_message                  string   the error message associated with the error code. Normally None.
+        error_url                      string   the request url that had the error
+        expires_at                     string   the ISO 8601 time that the refresh token expires at
+        expires_in                     int      the number of seconds until the token expires
+        grant_type                     string
+        options                        dict:    Valid options are:
+                                                - scope
+                                                - authenticating_institution_id
+                                                - context_institution_id
+                                                - redirect_uri
+                                                - code
+                                                - refresh_token
+        redirect_uri                   string   string, the url that client authenticates from ie, https://localhost:8000/auth/
+        refresh_token                  string   the refresh token object, see refreshtoken.py in the authliboclc folder.
+        scope                          list     web services associated with the WSKey, ie ['WorldCatMetadataAPI']
+        type                           str      token type, for our use case it is always "bearer"
+        user                           object   user object, see user.py in the authliboclc folder.
+        wskey                          object   wskey object, see wskey.py in the authliboclc folder.
     """
 
-    accessTokenString = None
-    accessTokenUrl = None
-    authenticatingInstitutionId = None
-    authorizationServer = AUTHORIZATION_SERVER
+    access_token_string = None
+    access_token_url = None
+    authenticating_institution_id = None
+    authorization_server = AUTHORIZATION_SERVER
     code = None
-    contextInstitutionId = None
-    errorCode = None
-    errorMessage = None
-    errorUrl = None
-    expiresAt = None
-    expiresIn = None
-    grantType = None
+    context_institution_id = None
+    error_code = None
+    error_message = None
+    error_url = None
+    expires_at = None
+    expires_in = None
+    grant_type = None
     options = None
-    redirectUri = None
-    refreshToken = None
+    redirect_uri = None
+    refresh_token = None
     scope = None
     type = None
     user = None
     wskey = None
 
-    validOptions = [
+    valid_options = [
         'scope',
-        'authenticatingInstitutionId',
-        'contextInstitutionId',
-        'redirectUri',
+        'authenticating_institution_id',
+        'context_institution_id',
+        'redirect_uri',
         'code',
-        'refreshToken'
+        'refresh_token'
     ]
 
     validGrantTypes = [
@@ -134,69 +132,69 @@ class AccessToken(object):
     ]
 
 
-    def __init__(self, grantType=None, options=None):
+    def __init__(self, grant_type=None, options=None):
         """Constructor.
 
         Args:
-            grantType: string, the type of access token request to make:
+            grant_type: string, the type of access token request to make:
                        - authorization_code
                        - client_credentials
                        - refresh_token
             options: dict, options depend on the type of request being made, but may include:
                      - scope
-                     - authenticatingInstitutionId
-                     - contextInstitutionId
-                     - redirectUri
+                     - authenticating_institution_id
+                     - context_institution_id
+                     - redirect_uri
                      - code
-                     - refreshToken
+                     - refresh_token
         """
-        if grantType == None or not grantType in AccessToken.validGrantTypes:
+        if grant_type == None or not grant_type in AccessToken.validGrantTypes:
             raise InvalidGrantType('You must pass a valid grant type to construct an Access Token.')
-        self.grantType = grantType
+        self.grant_type = grant_type
 
         if options == None or len(options) < 1:
             raise NoOptionsPassed('You must pass at least one option to construct an Access Token. Valid options '
-                                  'are scope, authenticatingInstitutionId, contextInstitutionId, redirectUri, '
-                                  'code and refreshToken')
+                                  'are scope, authenticating_institution_id, context_institution_id, redirect_uri, '
+                                  'code and refresh_token')
 
-        if (self.grantType == 'authorization_code' and (
+        if (self.grant_type == 'authorization_code' and (
                             not 'code' in options or
-                            not 'redirectUri' in options or
-                        not 'authenticatingInstitutionId' in options or
-                    not 'contextInstitutionId' in options)
+                            not 'redirect_uri' in options or
+                        not 'authenticating_institution_id' in options or
+                    not 'context_institution_id' in options)
         ):
-            raise RequiredOptionsMissing('You must pass the options: code, redirectUri, '
-                                         'authenticatingInstitutionId and contextInstitutionId to construct an Access '
+            raise RequiredOptionsMissing('You must pass the options: code, redirect_uri, '
+                                         'authenticating_institution_id and context_institution_id to construct an Access '
                                          'Token using the authorization_code grant type.')
 
-        elif (self.grantType == 'client_credentials' and (
+        elif (self.grant_type == 'client_credentials' and (
                             not 'scope' in options or
-                            not 'authenticatingInstitutionId' in options or
-                        not 'contextInstitutionId' in options or
+                            not 'authenticating_institution_id' in options or
+                        not 'context_institution_id' in options or
                     not 'scope' in options)):
             raise RequiredOptionsMissing(
-                'You must pass the options: scope, authenticatingInstitutionId and contextInstitutionId ' +
+                'You must pass the options: scope, authenticating_institution_id and context_institution_id ' +
                 'to construct an Access Token using the client_credential grant type.')
 
-        elif (self.grantType == 'refresh_token' and (
-                not 'refreshToken' in options)):
+        elif (self.grant_type == 'refresh_token' and (
+                not 'refresh_token' in options)):
             raise RequiredOptionsMissing(
-                'You must pass the option refreshToken to construct an Access Token using the ' +
+                'You must pass the option refresh_token to construct an Access Token using the ' +
                 'refresh_token grant type.')
 
         if ('scope' in options and type(options['scope']) is not list):
             raise RequiredOptionsMissing("scope must be a list of one or more scopes, i.e. ['WMS_NCIP' {, ...}]")
 
         for key, value in options.items():
-            if key in AccessToken.validOptions:
+            if key in AccessToken.valid_options:
                 setattr(self, key, value)
 
-        self.accessTokenUrl = self.getAccessTokenURL()
+        self.access_token_url = self.get_access_token_url()
 
-    def isExpired(self):
+    def is_expired(self):
         """Test if the token is expired. Returns true if it is."""
         status = False
-        if mktime(time.strptime(self.expiresAt, "%Y-%m-%d %H:%M:%SZ")) < time.time():
+        if mktime(time.strptime(self.expires_at, "%Y-%m-%d %H:%M:%SZ")) < time.time():
             status = True
         return status
 
@@ -210,27 +208,27 @@ class AccessToken(object):
         if user != None:
             self.user = user
             self.options = {'user': self.user}
-        authorization = self.wskey.getHMACSignature(**{
+        authorization = self.wskey.get_hmac_signature(**{
             'method': 'POST',
-            'requestUrl': self.accessTokenUrl,
+            'request_url': self.access_token_url,
             'options': self.options
         })
-        self.requestAccessToken(authorization, self.accessTokenUrl)
+        self.request_access_token(authorization, self.access_token_url)
 
     def refresh(self):
         """Refresh an access token."""
         if self.wskey == None:
             raise InvalidObject('AccessToken must have an associated WSKey Property')
 
-        self.grantType = 'refresh_token'
-        self.accessTokenUrl = self.getAccessTokenURL()
-        authorization = self.wskey.getHMACSignature(**{
+        self.grant_type = 'refresh_token'
+        self.access_token_url = self.get_access_token_url()
+        authorization = self.wskey.get_hmac_signature(**{
             'method': 'POST',
-            'requestUrl': self.accessTokenUrl
+            'request_url': self.access_token_url
         })
-        self.requestAccessToken(authorization, self.accessTokenUrl)
+        self.request_access_token(authorization, self.access_token_url)
 
-    def requestAccessToken(self, authorization, url):
+    def request_access_token(self, authorization, url):
         """ Request an access token. """
         request = urllib2.Request(**{
             'url': url,
@@ -243,35 +241,35 @@ class AccessToken(object):
 
         try:
             result = opener.open(request)
-            self.parseTokenResponse(result.read())
+            self.parse_token_response(result.read())
 
         except urllib2.HTTPError, e:
-            self.parseErrorResponse(e)
+            self.parse_error_response(e)
 
-    def getAccessTokenURL(self):
+    def get_access_token_url(self):
         """ get Access Token URL """
-        accessTokenUrl = self.authorizationServer + '/accessToken?grant_type=' + self.grantType
-        if self.grantType == 'refresh_token':
-            accessTokenUrl += '&refresh_token=' + self.refreshToken
-        elif self.grantType == 'authorization_code':
-            accessTokenUrl += (
+        access_token_url = self.authorization_server + '/accessToken?grant_type=' + self.grant_type
+        if self.grant_type == 'refresh_token':
+            access_token_url += '&refresh_token=' + self.refresh_token
+        elif self.grant_type == 'authorization_code':
+            access_token_url += (
                 '&' + 'code=' + self.code +
-                '&' + 'authenticatingInstitutionId=' + self.authenticatingInstitutionId +
-                '&' + 'contextInstitutionId=' + self.contextInstitutionId +
-                '&' + urllib.urlencode({'redirect_uri': self.redirectUri}))
-        elif self.grantType == 'client_credentials':
-            accessTokenUrl += (
-                '&authenticatingInstitutionId=' + self.authenticatingInstitutionId +
-                '&contextInstitutionId=' + self.contextInstitutionId +
+                '&' + 'authenticatingInstitutionId=' + self.authenticating_institution_id +
+                '&' + 'contextInstitutionId=' + self.context_institution_id +
+                '&' + urllib.urlencode({'redirect_uri': self.redirect_uri}))
+        elif self.grant_type == 'client_credentials':
+            access_token_url += (
+                '&authenticatingInstitutionId=' + self.authenticating_institution_id +
+                '&contextInstitutionId=' + self.context_institution_id +
                 '&scope=' + ' '.join(self.scope))
         else:
-            accessTokenUrl = ''
+            access_token_url = ''
 
-        return accessTokenUrl
+        return access_token_url
 
 
-    def parseTokenResponse(self, responseString):
-        """Parse the url string which consists of the redirectUri followed by the access token parameters."""
+    def parse_token_response(self, responseString):
+        """Parse the url string which consists of the redirect_uri followed by the access token parameters."""
         try:
             responseJSON = json.loads(responseString)
         except ValueError:
@@ -279,53 +277,53 @@ class AccessToken(object):
             print responseString
             return
 
-        self.accessTokenString = responseJSON.get('access_token', None)
+        self.access_token_string = responseJSON.get('access_token', None)
         self.type = responseJSON.get('token_type', None)
-        self.expiresAt = responseJSON.get('expires_at', None)
-        self.expiresIn = responseJSON.get('expires_in', None)
-        self.contextInstitutionId = responseJSON.get('context_institution_id', None)
-        self.errorCode = responseJSON.get('error_code', None)
+        self.expires_at = responseJSON.get('expires_at', None)
+        self.expires_in = responseJSON.get('expires_in', None)
+        self.context_institution_id = responseJSON.get('context_institution_id', None)
+        self.error_code = responseJSON.get('error_code', None)
 
-        principalID = responseJSON.get('principalID', None)
-        principalIDNS = responseJSON.get('principalIDNS', None)
+        principal_id = responseJSON.get('principalID', None)
+        principal_idns = responseJSON.get('principalIDNS', None)
 
-        if principalID != None and principalIDNS != None:
+        if principal_id != None and principal_idns != None:
             self.user = User(**{
-                'authenticatingInstitutionID': self.authenticatingInstitutionId,
-                'principalID': principalID,
-                'principalIDNS': principalIDNS
+                'authenticating_institution_id': self.authenticating_institution_id,
+                'principal_id': principal_id,
+                'principal_idns': principal_idns
             })
 
-        refreshToken = responseJSON.get('refresh_token', None)
+        refresh_token = responseJSON.get('refresh_token', None)
 
-        if refreshToken != None:
-            self.refreshToken = RefreshToken(**{
-                'tokenValue': refreshToken,
-                'expiresIn': responseJSON.get('refresh_token_expires_in', None),
-                'expiresAt': responseJSON.get('refresh_token_expires_at', None)
+        if refresh_token != None:
+            self.refresh_token = RefreshToken(**{
+                'tokenValue': refresh_token,
+                'expires_in': responseJSON.get('refresh_token_expires_in', None),
+                'expires_at': responseJSON.get('refresh_token_expires_at', None)
             })
 
-    def parseErrorResponse(self, httpError):
-        self.errorCode = httpError.getcode()
-        self.errorMessage = str(httpError)
-        self.errorUrl = httpError.geturl()
+    def parse_error_response(self, httpError):
+        self.error_code = httpError.getcode()
+        self.error_message = str(httpError)
+        self.error_url = httpError.geturl()
         return ''
 
     def __str__(self):
-        ret = 'accessTokenUrl:\t\t\t' + str(self.accessTokenUrl).replace('?', '?\n\t\t\t\t').replace('&',
+        ret = 'access_token_url:\t\t\t' + str(self.access_token_url).replace('?', '?\n\t\t\t\t').replace('&',
                                                                                                      '\n\t\t\t\t&') + "\n"
-        ret += 'authenticatingInstitutionId:\t' + str(self.authenticatingInstitutionId) + "\n"
-        ret += 'authorizationServer:\t\t' + str(self.authorizationServer) + "\n"
+        ret += 'authenticating_institution_id:\t' + str(self.authenticating_institution_id) + "\n"
+        ret += 'authorization_server:\t\t' + str(self.authorization_server) + "\n"
         ret += 'code:\t\t\t\t' + str(self.code) + "\n"
-        ret += 'contextInstitutionId:\t\t' + str(self.contextInstitutionId) + "\n"
-        ret += 'errorCode:\t\t' + str(self.errorCode) + "\n"
-        ret += 'errorMessage:\t\t\t' + str(self.errorMessage) + "\n"
-        ret += 'expiresAt:\t\t\t' + str(self.expiresAt) + "\n"
-        ret += 'expiresIn:\t\t\t' + str(self.expiresIn) + "\n"
-        ret += 'grantType:\t\t\t' + str(self.grantType) + "\n"
+        ret += 'context_institution_id:\t\t' + str(self.context_institution_id) + "\n"
+        ret += 'error_code:\t\t' + str(self.error_code) + "\n"
+        ret += 'error_message:\t\t\t' + str(self.error_message) + "\n"
+        ret += 'expires_at:\t\t\t' + str(self.expires_at) + "\n"
+        ret += 'expires_in:\t\t\t' + str(self.expires_in) + "\n"
+        ret += 'grant_type:\t\t\t' + str(self.grant_type) + "\n"
         ret += 'options:\t\t\t' + str(self.options) + "\n"
-        ret += 'redirectUri:\t\t\t' + str(self.redirectUri) + "\n"
-        ret += 'refreshToken:' + str(self.refreshToken) + "\n"
+        ret += 'redirect_uri:\t\t\t' + str(self.redirect_uri) + "\n"
+        ret += 'refresh_token:' + str(self.refresh_token) + "\n"
         ret += 'scope:\t' + str(self.scope) + "\n"
         ret += 'type:\t\t\t\t' + str(self.type) + "\n"
         ret += 'user:' + str(self.user) + "\n"

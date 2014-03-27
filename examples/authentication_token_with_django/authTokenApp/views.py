@@ -28,12 +28,12 @@ import pickle
 
 def index(request):
     """You must fill in the clientID and secret with your WSKey parameters"""
-    key = '{clientID}'
-    secret = '{secret}'
+    key = 'GClgKk9psu7kQ3p9uoAUlrVjNeuO8LWlbBIgdeLTblNb9OjPspImNAUa5KHdAfuwV8x4rEmbPnq83DvH'
+    secret = 'eHg9QAoUCH2utVX4Rovc6Q=='
 
     """Default values for the Sandbox Institution. You may want to change them to your institution's values"""
-    authenticatingInstitutionID = '128807'
-    contextInstitutionID = '128807'
+    authenticating_institution_id = '128807'
+    context_institution_id = '128807'
 
     """We use the Worldcat Metadata API to test the Access Token"""
     services = ['WorldCatMetadataAPI', 'refresh_token']
@@ -62,30 +62,30 @@ def index(request):
     """The redirect URI is calculated here and must match the redirect URI assigned to your WSKey"""
     if request.is_secure:
         """You must use SSL to request an Access token"""
-        redirectUri = 'https://' + request.get_host() + request.path  # https://localhost:8000/auth/
+        redirect_uri = 'https://' + request.get_host() + request.path  # https://localhost:8000/auth/
     else:
         """This won't work."""
-        redirectUri = 'http://' + request.get_host() + request.path  # http://localhost:8000/auth/
+        redirect_uri = 'http://' + request.get_host() + request.path  # http://localhost:8000/auth/
 
     """Populate the WSKey object its parameters"""
-    myWskey = wskey.Wskey(**{
+    my_wskey = wskey.Wskey(**{
         'key': key,
         'secret': secret,
         'options': {
             'services': services,
-            'redirectUri': redirectUri
+            'redirect_uri': redirect_uri
         }
     })
 
-    accessToken = None
+    access_token = None
 
-    """If an accessToken is stored in the current session load it."""
-    if request.session.get('accessToken', None) != None:
-        accessToken = pickle.loads(request.session.get('accessToken', None))
+    """If an access_token is stored in the current session load it."""
+    if request.session.get('access_token', None) != None:
+        access_token = pickle.loads(request.session.get('access_token', None))
 
-    """If the accessToken we loaded is expired, we can't use it."""
-    if accessToken != None and accessToken.isExpired():
-        accessToken = None
+    """If the access_token we loaded is expired, we can't use it."""
+    if access_token != None and access_token.is_expired():
+        access_token = None
 
     """If there is a code parameter on the current URL, load it."""
     code = request.GET.get('code', None)
@@ -98,51 +98,51 @@ def index(request):
         """If an error was returned, display it."""
         response.write('<p class="error">Error: ' + error + '<br>' + errorDescription + '</p>')
 
-    elif accessToken == None and code == None:
+    elif access_token == None and code == None:
         """Initiate user authentication by executing a redirect to the IDM sign in page."""
-        loginUrl = myWskey.getLoginUrl(**{
-            'authenticatingInstitutionId': authenticatingInstitutionID,
-            'contextInstitutionId': contextInstitutionID
+        login_url = my_wskey.get_login_url(**{
+            'authenticating_institution_id': authenticating_institution_id,
+            'context_institution_id': context_institution_id
         })
-        response['Location'] = loginUrl
+        response['Location'] = login_url
         response.status_code = '303'
 
-    elif accessToken == None and code != None:
+    elif access_token == None and code != None:
         """Request an access token using the user authentication code returned after the user authenticated"""
         """Then request a bibliographic record"""
-        accessToken = myWskey.getAccessTokenWithAuthCode(**{
+        access_token = my_wskey.get_access_token_with_auth_code(**{
             'code': code,
-            'authenticatingInstitutionId': authenticatingInstitutionID,
-            'contextInstitutionId': contextInstitutionID
+            'authenticating_institution_id': authenticating_institution_id,
+            'context_institution_id': context_institution_id
         })
 
-        if accessToken.errorCode == None:
-            request.session['accessToken'] = pickle.dumps(accessToken)
+        if access_token.error_code == None:
+            request.session['access_token'] = pickle.dumps(access_token)
             response.write('<p><strong>Access Token</strong> NOT FOUND in this session, so I requested a new one.</p>')
 
-        response.write(formatAccessToken(**{
-            'accessToken': accessToken
+        response.write(format_access_token(**{
+            'access_token': access_token
         }))
 
-        if accessToken.errorCode == None:
-            response.write(getBibRecord(**{
-                'accessToken': accessToken,
-                'wskey': myWskey
+        if access_token.error_code == None:
+            response.write(get_bib_record(**{
+                'access_token': access_token,
+                'wskey': my_wskey
             }))
 
-    elif accessToken != None:
+    elif access_token != None:
         """We already have an Access Token, so display the token and request a Bibliographic Record"""
-        if accessToken.errorCode == None:
+        if access_token.error_code == None:
             response.write('<p><strong>Access Token</strong> found in this session, and it is still valid.</p>')
 
-        response.write(formatAccessToken(**{
-            'accessToken': accessToken
+        response.write(format_access_token(**{
+            'access_token': access_token
         }))
 
-        if accessToken.errorCode == None:
-            response.write(getBibRecord(**{
-                'accessToken': accessToken,
-                'wskey': myWskey
+        if access_token.error_code == None:
+            response.write(get_bib_record(**{
+                'access_token': access_token,
+                'wskey': my_wskey
             }))
 
     return response
@@ -151,32 +151,35 @@ def index(request):
 """Display all the parameters of the Access Token"""
 
 
-def formatAccessToken(accessToken):
+def format_access_token(access_token):
+
+    print(access_token)
+
     ret = '<h2>Access Token</h2>'
 
     ret += '<table class="pure-table">'
 
-    if accessToken.errorCode != None:
-        ret += '<tr><td>Error Code</td><td>' + str(accessToken.errorCode) + '</td></tr>'
-        ret += '<tr><td>Error Message</td><td>' + str(accessToken.errorMessage) + '</td></tr>'
+    if access_token.error_code != None:
+        ret += '<tr><td>Error Code</td><td>' + str(access_token.error_code) + '</td></tr>'
+        ret += '<tr><td>Error Message</td><td>' + str(access_token.error_message) + '</td></tr>'
         ret += ('<tr><td>Error Url</td><td><pre>' +
-                str(accessToken.errorUrl).replace('?', '?\n').replace('&', '\n&') + '</pre></td></tr>')
+                str(access_token.error_url).replace('?', '?\n').replace('&', '\n&') + '</pre></td></tr>')
 
     else:
-        ret += '<tr><td>access_token</td><td>' + str(accessToken.accessTokenString) + '</td></tr>'
-        ret += '<tr><td>token_type</td><td>' + str(accessToken.type) + '</td></tr>'
-        ret += '<tr><td>expires_at</td><td>' + str(accessToken.expiresAt) + '</td></tr>'
-        ret += '<tr><td>expires_in</td><td>' + str(accessToken.expiresIn) + '</td></tr>'
+        ret += '<tr><td>access_token</td><td>' + str(access_token.access_token_string) + '</td></tr>'
+        ret += '<tr><td>token_type</td><td>' + str(access_token.type) + '</td></tr>'
+        ret += '<tr><td>expires_at</td><td>' + str(access_token.expires_at) + '</td></tr>'
+        ret += '<tr><td>expires_in</td><td>' + str(access_token.expires_in) + '</td></tr>'
 
-        if accessToken.user != None:
-            ret += '<tr><td>principalIDNS</td><td>' + str(accessToken.user.principalID) + '</td></tr>'
-            ret += '<tr><td>principalID</td><td>' + str(accessToken.user.principalIDNS) + '</td></tr>'
-            ret += '<tr><td>context_institution_id</td><td>' + str(accessToken.contextInstitutionId) + '</td></tr>'
+        if access_token.user != None:
+            ret += '<tr><td>principalID</td><td>' + str(access_token.user.principal_id) + '</td></tr>'
+            ret += '<tr><td>principalIDNS</td><td>' + str(access_token.user.principal_idns) + '</td></tr>'
+            ret += '<tr><td>contextInstitutionId</td><td>' + str(access_token.context_institution_id) + '</td></tr>'
 
-        if accessToken.refreshToken != None:
-            ret += '<tr><td>refresh_token</td><td>' + str(accessToken.refreshToken.refreshToken) + '</td></tr>'
-            ret += '<tr><td>refresh_token_expires_at</td><td>' + str(accessToken.refreshToken.expiresAt) + '</td></tr>'
-            ret += '<tr><td>refresh_token_expires_in</td><td>' + str(accessToken.refreshToken.expiresIn) + '</td></tr>'
+        if access_token.refresh_token != None:
+            ret += '<tr><td>refresh_token</td><td>' + str(access_token.refresh_token.refresh_token) + '</td></tr>'
+            ret += '<tr><td>refresh_token_expires_at</td><td>' + str(access_token.refresh_token.expires_at) + '</td></tr>'
+            ret += '<tr><td>refresh_token_expires_in</td><td>' + str(access_token.refresh_token.expires_in) + '</td></tr>'
 
     ret += '</table>'
     return ret
@@ -185,34 +188,34 @@ def formatAccessToken(accessToken):
 """Use an Access Token's User Parameter to request a Bibliographic Record"""
 
 
-def getBibRecord(accessToken, wskey):
-    requestUrl = (
+def get_bib_record(access_token, wskey):
+    request_url = (
         'https://worldcat.org/bib/data/823520553?' +
         'classificationScheme=LibraryOfCongress' +
         '&holdingLibraryCode=MAIN'
     )
 
-    authorizationHeader = wskey.getHMACSignature(**{
+    authorization_header = wskey.get_hmac_signature(**{
         'method': 'GET',
-        'requestUrl': requestUrl,
+        'request_url': request_url,
         'options': {
-            'user': accessToken.user
+            'user': access_token.user
         }
     })
 
-    myRequest = urllib2.Request(**{
-        'url': requestUrl,
+    my_request = urllib2.Request(**{
+        'url': request_url,
         'data': None,
-        'headers': {'Authorization': authorizationHeader}
+        'headers': {'Authorization': authorization_header}
     })
 
     try:
-        xmlResult = urllib2.urlopen(myRequest).read()
+        xml_result = urllib2.urlopen(my_request).read()
 
     except urllib2.HTTPError, e:
-        xmlResult = str(e)
+        xml_result = str(e)
 
     ret = '<h2>Bibliographic Record</h2>'
-    ret += '<pre>' + xmlResult.replace('<', '&lt;') + '</pre>'
+    ret += '<pre>' + xml_result.replace('<', '&lt;') + '</pre>'
 
     return ret

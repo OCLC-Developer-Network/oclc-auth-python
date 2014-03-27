@@ -22,7 +22,6 @@ HMAC Requests, which are strictly server side, use an Authenication Code object 
 and perform hashing.
 
 """
-__author__ = 'campbelg@oclc.org (George Campbell)'
 
 from urlparse import urlparse
 import urllib
@@ -47,65 +46,65 @@ class AuthCode(object):
     from OCLC's servers.
 
     Class Variables:
-        authorizationServer           string   the oclc server that conducts authentication
-        clientId                      string   the public portion of the Web Services Key (WSKey)
-        authenticatingInstitutionId   string   the institutionID that is authenticated against
-        contextInstitutionId          string   the institutionID that the request is made against
-        redirectUri                   string   the redirectUri for the request
+        authorization_server          string   the oclc server that conducts authentication
+        client_id                     string   the public portion of the Web Services Key (WSKey)
+        authenticating_institution_id string   the institutionID that is authenticated against
+        context_institution_id        string   the institutionID that the request is made against
+        redirect_uri                  string   the redirect_uri for the request
         scopes                        list     a list of one or more web services
     """
-    authorizationServer = AUTHORIZATION_SERVER
-    clientId = None
-    authenticatingInstitutionId = None
-    contextInstitutionId = None
-    redirectUri = None
+    authorization_server = AUTHORIZATION_SERVER
+    client_id = None
+    authenticating_institution_id = None
+    context_institution_id = None
+    redirect_uri = None
     scopes = None
 
     def __init__(self,
-                 clientId=None,
-                 authenticatingInstitutionId=None,
-                 contextInstitutionId=None,
-                 redirectUri=None,
+                 client_id=None,
+                 authenticating_institution_id=None,
+                 context_institution_id=None,
+                 redirect_uri=None,
                  scopes=None):
         """Constructor.
 
         Args:
-            clientId: string, the public portion of the Web Services Key (WSKey)
-            authenticatingInstitutionId: string, the institutionID that is authenticated against
-            contextInstitutionId: string, the institutionID that the request is made against
-            redirectUri: string, the redirectUri for the request
+            client_id: string, the public portion of the Web Services Key (WSKey)
+            authenticating_institution_id: string, the institutionID that is authenticated against
+            context_institution_id: string, the institutionID that the request is made against
+            redirect_uri: string, the redirect_uri for the request
             scopes: list, a list of one or more web services
         """
 
-        self.clientId = clientId
-        self.authenticatingInstitutionId = authenticatingInstitutionId
-        self.contextInstitutionId = contextInstitutionId
-        self.redirectUri = redirectUri
+        self.client_id = client_id
+        self.authenticating_institution_id = authenticating_institution_id
+        self.context_institution_id = context_institution_id
+        self.redirect_uri = redirect_uri
         self.scopes = scopes
 
-        if self.clientId == None:
-            raise InvalidParameter('Required option missing: clientId.')
-        elif self.clientId == '':
-            raise InvalidParameter('Cannot be empty string: clientId.')
+        if self.client_id == None:
+            raise InvalidParameter('Required option missing: client_id.')
+        elif self.client_id == '':
+            raise InvalidParameter('Cannot be empty string: client_id.')
 
-        if self.authenticatingInstitutionId == None:
-            raise InvalidParameter('Required option missing: authenticatingInstitutionId.')
-        elif self.authenticatingInstitutionId == '':
-            raise InvalidParameter('Cannot be empty string: authenticatingInstitutionId.')
+        if self.authenticating_institution_id == None:
+            raise InvalidParameter('Required option missing: authenticating_institution_id.')
+        elif self.authenticating_institution_id == '':
+            raise InvalidParameter('Cannot be empty string: authenticating_institution_id.')
 
-        if self.contextInstitutionId == None:
-            raise InvalidParameter('Required option missing: contextInstitutionId.')
-        elif self.contextInstitutionId == '':
-            raise InvalidParameter('Cannot be empty string: contextInstitutionId.')
+        if self.context_institution_id == None:
+            raise InvalidParameter('Required option missing: context_institution_id.')
+        elif self.context_institution_id == '':
+            raise InvalidParameter('Cannot be empty string: context_institution_id.')
 
-        if self.redirectUri == None:
-            raise InvalidParameter('Required option missing: redirectUri.')
-        elif self.redirectUri == '':
-            raise InvalidParameter('Cannot be empty string: redirectUri.')
+        if self.redirect_uri == None:
+            raise InvalidParameter('Required option missing: redirect_uri.')
+        elif self.redirect_uri == '':
+            raise InvalidParameter('Cannot be empty string: redirect_uri.')
         else:
-            scheme = urlparse("".join(self.redirectUri)).scheme
+            scheme = urlparse("".join(self.redirect_uri)).scheme
             if scheme != 'http' and scheme != 'https':
-                raise InvalidParameter('Invalid redirectUri. Must begin with http:// or https://')
+                raise InvalidParameter('Invalid redirect_uri. Must begin with http:// or https://')
 
         if self.scopes == None or self.scopes == '':
             raise InvalidParameter(
@@ -114,25 +113,25 @@ class AuthCode(object):
             raise InvalidParameter('You must pass at least one valid scope')
 
 
-    def getLoginUrl(self):
+    def get_login_url(self):
         """Returns a login url based on the auth code parameters."""
         return (
-            AuthCode.authorizationServer + '/authorizeCode' +
-            '?' + 'authenticatingInstitutionId=' + self.authenticatingInstitutionId +
-            '&' + 'client_id=' + self.clientId +
-            '&' + 'contextInstitutionId=' + self.contextInstitutionId +
-            '&' + urllib.urlencode({'redirect_uri': self.redirectUri}) +
+            AuthCode.authorization_server + '/authorizeCode' +
+            '?' + 'authenticatingInstitutionId=' + self.authenticating_institution_id +
+            '&' + 'client_id=' + self.client_id +
+            '&' + 'contextInstitutionId=' + self.context_institution_id +
+            '&' + urllib.urlencode({'redirect_uri': self.redirect_uri}) +
             '&' + 'response_type=code' +
             '&' + 'scope=' + " ".join(self.scopes)
         )
 
     def __str__(self):
         ret = ''
-        ret += '\tauthorizationServer: ' + str(self.authorizationServer) + "\n"
-        ret += '\tclientId: ' + str(self.clientId) + "\n"
-        ret += '\tauthenticatingInstitutionId: ' + str(self.authenticatingInstitutionId) + "\n"
-        ret += '\tcontextInstitutionId: ' + str(self.contextInstitutionId) + "\n"
-        ret += '\tredirectUri: ' + str(self.redirectUri) + "\n"
+        ret += '\tauthorization_server: ' + str(self.authorization_server) + "\n"
+        ret += '\tclient_id: ' + str(self.client_id) + "\n"
+        ret += '\tauthenticating_institution_id: ' + str(self.authenticating_institution_id) + "\n"
+        ret += '\tcontext_institution_id: ' + str(self.context_institution_id) + "\n"
+        ret += '\tredirect_uri: ' + str(self.redirect_uri) + "\n"
         ret += '\tscopes: ' + str(self.scopes) + "\n"
 
         return ret

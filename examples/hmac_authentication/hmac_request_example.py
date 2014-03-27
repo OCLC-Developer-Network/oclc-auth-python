@@ -30,40 +30,42 @@ import urllib2
 
 key = '{clientID}'
 secret = '{secret}'
-principalID = '{principalID}'
-principalIDNS = '{principalIDNS}'
-authenticatingInstitutionID = '{institutionID}'  # 128807 = Sandbox Institution
+principal_id = '{principalID}'
+principal_idns = '{principalIDNS}'
+authenticating_institution_id = '{institutionID}'  # 128807 = Sandbox Institution
 
-requestUrl = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
+request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
 
-myWskey = wskey.Wskey(**{
+my_wskey = wskey.Wskey(**{
     'key': key,
     'secret': secret,
     'options': None})
 
-myUser = user.User(**{
-    'authenticatingInstitutionID': authenticatingInstitutionID,
-    'principalID': principalID,
-    'principalIDNS': principalIDNS
+my_user = user.User(**{
+    'authenticating_institution_id': authenticating_institution_id,
+    'principal_id': principal_id,
+    'principal_idns': principal_idns
 })
 
-authorizationHeader = myWskey.getHMACSignature(**{
+authorization_header = my_wskey.get_hmac_signature(**{
     'method': 'GET',
-    'requestUrl': requestUrl,
+    'request_url': request_url,
     'options': {
-        'user': myUser,
-        'authParams': None}
+        'user': my_user,
+        'auth_params': None}
 })
 
-myRequest = urllib2.Request(**{
-    'url': requestUrl,
+print(authorization_header)
+
+my_request = urllib2.Request(**{
+    'url': request_url,
     'data': None,
-    'headers': {'Authorization': authorizationHeader}
+    'headers': {'Authorization': authorization_header}
 })
 
 try:
-    xmlresult = urllib2.urlopen(myRequest).read()
-    print(xmlresult)
+    xml_result = urllib2.urlopen(my_request).read()
+    print(xml_result)
 
 except urllib2.HTTPError, e:
     print ('** ' + str(e) + ' **')

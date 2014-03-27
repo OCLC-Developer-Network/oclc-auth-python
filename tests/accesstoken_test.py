@@ -27,10 +27,10 @@ class AccessTokenTests(unittest.TestCase):
 
     def setUp(self):
         self._options = {'scope': ['WMS_NCIP', 'WMS_ACQ'],
-                         'authenticatingInstitutionId': '128807',
-                         'contextInstitutionId': '128808',
-                         'redirectUri': 'ncip://testapp',
-                         'refreshToken': 'tk_1234',
+                         'authenticating_institution_id': '128807',
+                         'context_institution_id': '128808',
+                         'redirect_uri': 'ncip://testapp',
+                         'refresh_token': 'tk_1234',
                          'code': 'unknown'}
 
         self._myAccessToken = accesstoken.AccessToken('authorization_code',
@@ -38,45 +38,45 @@ class AccessTokenTests(unittest.TestCase):
 
     def testAuthorizationServer(self):
         self.assertEqual('https://authn.sd00.worldcat.org/oauth2',
-                         accesstoken.AccessToken.authorizationServer,
-                         'Unexpected authorization server endpoint: ' + self._myAccessToken.authorizationServer)
+                         accesstoken.AccessToken.authorization_server,
+                         'Unexpected authorization server endpoint: ' + self._myAccessToken.authorization_server)
 
     """ Make sure only the correct valid access token options are listed. """
 
     def testValidOptions(self):
-        options = accesstoken.AccessToken.validOptions
-        validOptions = [
+        options = accesstoken.AccessToken.valid_options
+        valid_options = [
             'scope',
-            'authenticatingInstitutionId',
-            'contextInstitutionId',
-            'redirectUri',
+            'authenticating_institution_id',
+            'context_institution_id',
+            'redirect_uri',
             'code',
-            'refreshToken'
+            'refresh_token'
         ]
-        self.assertEqual(options, validOptions,
-                         'Options must be scope, authenticatingInstitutionId, contextInstitutionId, redirectUri, '
-                         'code and refreshToken')
+        self.assertEqual(options, valid_options,
+                         'Options must be scope, authenticating_institution_id, context_institution_id, redirect_uri, '
+                         'code and refresh_token')
 
     """ Make sure the list of valid grant types is correct. """
 
     def testValidGrantTypes(self):
-        grantTypes = accesstoken.AccessToken.validGrantTypes
+        grant_types = accesstoken.AccessToken.validGrantTypes
         validGrantTypes = [
             'authorization_code',
             'refresh_token',
             'client_credentials'
         ]
-        self.assertEqual(grantTypes, validGrantTypes, 'Grant types must be authorization_code, refresh_token, '
+        self.assertEqual(grant_types, validGrantTypes, 'Grant types must be authorization_code, refresh_token, '
                                                       'client_credentials')
 
     """ Check that attempts to create Access Tokens work, and incorrect parameters raise exceptions. """
 
     def testCreateAccessToken(self):
         self.assertEqual(self._myAccessToken.scope, ['WMS_NCIP', 'WMS_ACQ'])
-        self.assertEqual(self._myAccessToken.authenticatingInstitutionId, '128807')
-        self.assertEqual(self._myAccessToken.contextInstitutionId, '128808')
-        self.assertEqual(self._myAccessToken.redirectUri, 'ncip://testapp')
-        self.assertEqual(self._myAccessToken.refreshToken, 'tk_1234')
+        self.assertEqual(self._myAccessToken.authenticating_institution_id, '128807')
+        self.assertEqual(self._myAccessToken.context_institution_id, '128808')
+        self.assertEqual(self._myAccessToken.redirect_uri, 'ncip://testapp')
+        self.assertEqual(self._myAccessToken.refresh_token, 'tk_1234')
         self.assertEqual(self._myAccessToken.code, 'unknown')
 
         with self.assertRaises(accesstoken.InvalidGrantType):
@@ -87,49 +87,49 @@ class AccessTokenTests(unittest.TestCase):
             accesstoken.AccessToken('authorization_code', {})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('authorization_code',
-                                    {'authenticatingInstitutionId': '', 'contextInstitutionId': ''})
+                                    {'authenticating_institution_id': '', 'context_institution_id': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('authorization_code', {'code': '', 'contextInstitutionId': ''})
+            accesstoken.AccessToken('authorization_code', {'code': '', 'context_institution_id': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('authorization_code', {'code': '', 'authenticatingInstitutionId': ''})
+            accesstoken.AccessToken('authorization_code', {'code': '', 'authenticating_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for client_credentials
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('client_credentials', {'refreshToken': '', 'contextInstitutionId': '', 'scope': ''})
+            accesstoken.AccessToken('client_credentials', {'refresh_token': '', 'context_institution_id': '', 'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('refresh_token',
-                                    {'client_credentials': '', 'authenticatingInstitutionId': '', 'scope': ''})
+                                    {'client_credentials': '', 'authenticating_institution_id': '', 'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('client_credentials',
-                                    {'refreshToken': '', 'authenticatingInstitutionId': '', 'contextInstitutionId': ''})
+                                    {'refresh_token': '', 'authenticating_institution_id': '', 'context_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for refresh_token
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('refresh_token',
-                                    {'authenticatingInstitutionId': '', 'contextInstitutionId': '', 'scope': ''})
+                                    {'authenticating_institution_id': '', 'context_institution_id': '', 'scope': ''})
 
         # Test that scope must be a list of scopes, not a string
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('authorization_code', {'code': '',
-                                                           'redirectUri': '',
-                                                           'authenticatingInstitutionId': '',
-                                                           'contextInstitutionId': '',
+                                                           'redirect_uri': '',
+                                                           'authenticating_institution_id': '',
+                                                           'context_institution_id': '',
                                                            'scope': 'WMS_ACQ'})
 
     """ Make sure an expired token is calculated properly. """
 
     def testIsExpired(self):
-        self._myAccessToken.expiresAt = '2014-01-01 12:00:00Z'
-        self.assertTrue(self._myAccessToken.isExpired())
+        self._myAccessToken.expires_at = '2014-01-01 12:00:00Z'
+        self.assertTrue(self._myAccessToken.is_expired())
 
-        self._myAccessToken.expiresAt = '2099-01-01 12:00:00Z'
-        self.assertFalse(self._myAccessToken.isExpired())
+        self._myAccessToken.expires_at = '2099-01-01 12:00:00Z'
+        self.assertFalse(self._myAccessToken.is_expired())
 
     """ Test creation of an access token for authorization_code. """
 
     def testGetAccessTokenURLforAuthorizationCode(self):
         myAT = accesstoken.AccessToken('authorization_code', self._options)
-        self.assertEqual(myAT.getAccessTokenURL(), (
+        self.assertEqual(myAT.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=authorization_code' +
             '&code=unknown' +
@@ -142,7 +142,7 @@ class AccessTokenTests(unittest.TestCase):
 
     def testGetAccessTokenURLforClientCredentials(self):
         myAT = accesstoken.AccessToken('client_credentials', self._options)
-        self.assertEqual(myAT.getAccessTokenURL(), (
+        self.assertEqual(myAT.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=client_credentials&' +
             'authenticatingInstitutionId=128807&' +
@@ -154,7 +154,7 @@ class AccessTokenTests(unittest.TestCase):
 
     def testGetAccessTokenURLforRefreshToken(self):
         myAT = accesstoken.AccessToken('refresh_token', self._options)
-        self.assertEqual(myAT.getAccessTokenURL(), (
+        self.assertEqual(myAT.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=refresh_token' +
             '&refresh_token=tk_1234'))
@@ -163,7 +163,7 @@ class AccessTokenTests(unittest.TestCase):
 
     def testParseTokenResponse(self):
         myAT = accesstoken.AccessToken('authorization_code', self._options)
-        myAT.parseTokenResponse(
+        myAT.parse_token_response(
             '{' +
             '"expires_at":"2014-03-13 15:44:59Z",' +
             '"principalIDNS":"urn:oclc:platform:128807",' +
@@ -180,52 +180,52 @@ class AccessTokenTests(unittest.TestCase):
 
         )
         expectedUser = user.User(**{
-            'authenticatingInstitutionID': '128807',
-            'principalID': '2334dd24-b27e-49bd-8fea-7cc8de670f8d',
-            'principalIDNS': 'urn:oclc:platform:128807'
+            'authenticating_institution_id': '128807',
+            'principal_id': '2334dd24-b27e-49bd-8fea-7cc8de670f8d',
+            'principal_idns': 'urn:oclc:platform:128807'
         })
 
         expectedRefreshToken = refreshtoken.RefreshToken(**{
             'tokenValue': 'rt_25fXauhJC09E5kwFxcf4TRXkTnaRYWHgJA0W',
-            'expiresIn': 1900,
-            'expiresAt': '2014-03-13 15:44:59Z'
+            'expires_in': 1900,
+            'expires_at': '2014-03-13 15:44:59Z'
         })
 
-        self.assertEqual(myAT.accessTokenString, 'tk_25fXauhJC09E5kwFxcf4TRXkTnaRYWHgJA0W')
+        self.assertEqual(myAT.access_token_string, 'tk_25fXauhJC09E5kwFxcf4TRXkTnaRYWHgJA0W')
         self.assertEqual(myAT.type, 'bearer')
-        self.assertEqual(myAT.expiresAt, '2014-03-13 15:44:59Z')
-        self.assertEqual(myAT.expiresIn, 1199)
-        self.assertEqual(myAT.errorCode, 'trouble')
-        self.assertEqual(myAT.contextInstitutionId, '128807')
+        self.assertEqual(myAT.expires_at, '2014-03-13 15:44:59Z')
+        self.assertEqual(myAT.expires_in, 1199)
+        self.assertEqual(myAT.error_code, 'trouble')
+        self.assertEqual(myAT.context_institution_id, '128807')
         self.assertEqual(user.User, type(myAT.user))
-        self.assertEqual(expectedUser.authenticatingInstitutionID, myAT.user.authenticatingInstitutionID)
-        self.assertEqual(expectedUser.principalID, myAT.user.principalID)
-        self.assertEqual(expectedUser.principalIDNS, myAT.user.principalIDNS)
-        self.assertEqual(refreshtoken.RefreshToken, type(myAT.refreshToken))
-        self.assertEqual(expectedRefreshToken.refreshToken, myAT.refreshToken.refreshToken)
-        self.assertEqual(expectedRefreshToken.expiresIn, myAT.refreshToken.expiresIn)
-        self.assertEqual(expectedRefreshToken.expiresAt, myAT.refreshToken.expiresAt)
+        self.assertEqual(expectedUser.authenticating_institution_id, myAT.user.authenticating_institution_id)
+        self.assertEqual(expectedUser.principal_id, myAT.user.principal_id)
+        self.assertEqual(expectedUser.principal_idns, myAT.user.principal_idns)
+        self.assertEqual(refreshtoken.RefreshToken, type(myAT.refresh_token))
+        self.assertEqual(expectedRefreshToken.refresh_token, myAT.refresh_token.refresh_token)
+        self.assertEqual(expectedRefreshToken.expires_in, myAT.refresh_token.expires_in)
+        self.assertEqual(expectedRefreshToken.expires_at, myAT.refresh_token.expires_at)
 
     """Test that the string representation of the class is complete."""
     def testStringRepresenationOfClass(self):
         self.assertEqual(str(self._myAccessToken), (
-            'accessTokenUrl:\t\t\thttps://authn.sd00.worldcat.org/oauth2/accessToken?\n' +
+            'access_token_url:\t\t\thttps://authn.sd00.worldcat.org/oauth2/accessToken?\n' +
             '\t\t\t\tgrant_type=authorization_code\n' +
             '\t\t\t\t&code=unknown\n' +
             '\t\t\t\t&authenticatingInstitutionId=128807\n' +
             '\t\t\t\t&contextInstitutionId=128808\n' +
             '\t\t\t\t&redirect_uri=ncip%3A%2F%2Ftestapp\n' +
-            'authenticatingInstitutionId:\t128807\n' +
-            'authorizationServer:\t\thttps://authn.sd00.worldcat.org/oauth2\n' +
+            'authenticating_institution_id:\t128807\n' +
+            'authorization_server:\t\thttps://authn.sd00.worldcat.org/oauth2\n' +
             'code:\t\t\t\tunknown\n' +
-            'contextInstitutionId:\t\t128808\n' +
-            'errorCode:\t\tNone\n' +
-            'errorMessage:\t\t\tNone\n' +
-            'expiresAt:\t\t\tNone\n' +
-            'expiresIn:\t\t\tNone\n' +
-            'grantType:\t\t\tauthorization_code\n' +
-            'options:\t\t\tNone\n' + 'redirectUri:\t\t\tncip://testapp\n' +
-            'refreshToken:tk_1234\n' +
+            'context_institution_id:\t\t128808\n' +
+            'error_code:\t\tNone\n' +
+            'error_message:\t\t\tNone\n' +
+            'expires_at:\t\t\tNone\n' +
+            'expires_in:\t\t\tNone\n' +
+            'grant_type:\t\t\tauthorization_code\n' +
+            'options:\t\t\tNone\n' + 'redirect_uri:\t\t\tncip://testapp\n' +
+            'refresh_token:tk_1234\n' +
             'scope:\t[\'WMS_NCIP\', \'WMS_ACQ\']\n' +
             'type:\t\t\t\tNone\n' +
             'user:None\n' +

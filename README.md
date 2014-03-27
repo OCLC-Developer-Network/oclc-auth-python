@@ -24,8 +24,8 @@ Running the Examples
 1. Edit `exampleHmacRequest.py` to insert your:
     * key
     * secret
-    * principalID
-    * principalIDNS
+    * principal_id
+    * principal_idns
     * authenticatingInstitutionID
 
 1. Run from the command line:
@@ -112,42 +112,42 @@ You need to supply authentication parameters. OCLC Web Service Keys can be <a hr
 <pre>
 key = '{clientID}'
 secret = '{secret}'
-principalID = '{principalID}'
-principalIDNS = '{principalIDNS}'
+principal_id = '{principal_id}'
+principal_idns = '{principal_idns}'
 authenticatingInstitutionID = '{institutionID}'
 </pre>
 
 Next, you need to construct a request URL. OCLC Web Services <a href="http://www.oclc.org/developer/develop/web-services.en.html">are documented here</a>. For example, to request a Bibliographic Record, your URL request might look like this:
 
 <pre>
-requestUrl = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
+request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
 </pre>
 
 Now you build your <strong>wskey</strong> and <strong>user</strong> objects. The options are meant for access token use and you do not need to add them for this example.
 See the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/blob/master/authliboclc/wskey.py">wskey.py</a> file in the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/tree/master/authliboclc">authliboclc</a> library folder.
 
 <pre>
-myWskey = wskey.Wskey(**{
+my_wskey = wskey.Wskey(**{
     'key': key,
     'secret': secret,
     'options': None})
 
-myUser = user.User(**{
+my_user = user.User(**{
     'authenticatingInstitutionID': authenticatingInstitutionID,
-    'principalID': principalID,
-    'principalIDNS': principalIDNS
+    'principal_id': principal_id,
+    'principal_idns': principal_idns
 })
 </pre>
 
 Calculate the Authorization header:
 
 <pre>
-authorizationHeader = myWskey.getHMACSignature(**{
+authorization_header = my_wskey.get_hmac_signature(**{
     'method': 'GET',
-    'requestUrl': requestUrl,
+    'request_url': request_url,
     'options': {
-        'user': myUser,
-        'authParams': None}
+        'user': my_user,
+        'auth_params': None}
 })
 </pre>
 
@@ -155,15 +155,15 @@ With our request URL and Authorization header prepared, we are ready to use Pyth
 library to make the GET request.
 
 <pre>
-myRequest = urllib2.Request(**{
-    'url': requestUrl,
+my_request = urllib2.Request(**{
+    'url': request_url,
     'data': None,
-    'headers': {'Authorization': authorizationHeader}
+    'headers': {'Authorization': authorization_header}
 })
 
 try:
-    xmlresult = urllib2.urlopen(myRequest).read()
-    print(xmlresult)
+    xml_result = urllib2.urlopen(my_request).read()
+    print(xml_result)
 
 except urllib2.HTTPError, e:
     print ('** ' + str(e) + ' **')
@@ -224,28 +224,28 @@ exchanged by the client to obtain Access Tokens:
 1. You need to gather your authentication parameters:
     * key
     * secret
-    * contextInstitutionID
+    * context_institution_id
     * authenticatingInstitutionID
     * services (api service name, ie `WorldCatMetadataAPI` for the <a href="http://www.oclc.org/developer/develop/web-services/worldcat-metadata-api.en.html">Metadata API</a>
-    * redirectUri (where your app runs on the web, i.e. `https://localhost:8000/auth/`
+    * redirect_uri (where your app runs on the web, i.e. `https://localhost:8000/auth/`
 
 1. Create a wskey object:
    <pre>
-   myWskey = wskey.Wskey(**{
+   my_wskey = wskey.Wskey(**{
        'key': key,
        'secret': secret,
        'options': {
            'services': ['service1' {,'service2',...} ],
-           'redirectUri': redirectUri
+           'redirect_uri': redirect_uri
        }
    })
    </pre>
 
 1. Generate a login URL and redirect to it:
    <pre>
-   loginUrl = myWskey.getLoginUrl(**{
-        'authenticatingInstitutionId': '{your institutionId}',
-        'contextInstitutionId': '{your institutionId}'
+   loginUrl = my_wskey.get_login_url(**{
+        'authenticating_institution_id': '{your institutionId}',
+        'context_institution_id': '{your institutionId}'
     })
     response['Location'] = loginUrl
     response.status_code = '303'
@@ -262,40 +262,40 @@ order to read or write data associated with a specific institution during a spec
 
 This library function takes the <strong>code</strong> and makes the Access Token request, returning the Access Token object.
 
-    accessToken = myWskey.getAccessTokenWithAuthCode(**{
+    access_token = my_wskey.get_access_token_with_auth_code(**{
         'code': code,
-        'authenticatingInstitutionId': '128807',
-        'contextInstitutionId': '128807'
+        'authenticating_institution_id': '128807',
+        'context_institution_id': '128807'
     })
 
 The access token object has these parameters:
 
-* accessTokenString
+* access_token_string
 * type
-* expiresAt (ISO 8601 time)
-* expiresIn (int, seconds)
+* expires_at (ISO 8601 time)
+* expires_in (int, seconds)
 * user
-    * principalID
-    * principalIDNS
+    * principal_id
+    * principal_idns
     * authenticatingInstitutionI
-* contextInstitutionId
-* errorCode
+* context_institution_id
+* error_code
 
 If you include <strong>refresh_token</strong> as one of the services, you will also get back a refresh token:
 
-* refreshToken
-    * refreshToken (the string value of the token)
-    * expiresAt (ISO 8601 time)
-    * expiresIn (int, seconds)
+* refresh_token
+    * refresh_token (the string value of the token)
+    * expires_at (ISO 8601 time)
+    * expires_in (int, seconds)
 
 
 ####Making requests with the Access Token
 
-Our access token has a user object which contains a principalID and principalIDNS. We can use those parameters to make
+Our access token has a user object which contains a principal_id and principal_idns. We can use those parameters to make
 a Bibliographic Record request. For example, let's retrieve the record for OCLC Number 823520553:
 
 <pre>
-requestUrl = (
+request_url = (
     'https://worldcat.org/bib/data/823520553?' +
     'classificationScheme=LibraryOfCongress' +
     '&holdingLibraryCode=MAIN'
@@ -305,11 +305,11 @@ requestUrl = (
 Now we construct an authorization header using our Access Token's user parameter:
 
 <pre>
-authorizationHeader = wskey.getHMACSignature(**{
+authorization_header = wskey.get_hmac_signature(**{
     'method': 'GET',
-    'requestUrl': requestUrl,
+    'request_url': request_url,
     'options': {
-        'user': accessToken.user
+        'user': access_token.user
     }
 })
 </pre>
@@ -317,22 +317,22 @@ authorizationHeader = wskey.getHMACSignature(**{
 Finally, we make the request:
 
 <pre>
-myRequest = urllib2.Request(**{
-    'url': requestUrl,
+my_request = urllib2.Request(**{
+    'url': request_url,
     'data': None,
-    'headers': {'Authorization': authorizationHeader}
+    'headers': {'Authorization': authorization_header}
 })
 
 try:
-    xmlResult = urllib2.urlopen(myRequest).read()
+    xmlResult = urllib2.urlopen(my_request).read()
 
 except urllib2.HTTPError, e:
     xmlResult = str(e)
 </pre>
 
-How come we used the user object with principalID and principalIDNS as our authentication, rather than the Access Token
-itself? Because the Worldcat Metadata API is an older API that does not yet accept Access Tokens. The principalID
-and principalIDNS can only by obtained with the authentication token, so the sign in process was still required.
+How come we used the user object with principal_id and principal_idns as our authentication, rather than the Access Token
+itself? Because the Worldcat Metadata API is an older API that does not yet accept Access Tokens. The principal_id
+and principal_idns can only by obtained with the authentication token, so the sign in process was still required.
 
 Resources
 ---------

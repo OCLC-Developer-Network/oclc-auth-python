@@ -22,8 +22,6 @@ Stores the WSKey parameters and methods for HMAC Hashing and requesting access t
 
 """
 
-__author__ = 'campbelg@oclc.org (George Campbell)'
-
 from urlparse import urlparse
 import urllib
 from authcode import AuthCode
@@ -58,27 +56,27 @@ class Wskey(object):
     """Web Services Key object
 
     Class variables
-    validOptions     dict     list of valid options that can be passed to this class
-    key              string   the clientID (public) portion of the WSKey
-    secret           string   the secret (private) portion of the WSKey
-    redirectUri      string   the url of the web app, for example https://localhost:8000/auth/
-    services         list     the web services associated with the WSKey, for example ['WorldCatMetadataAPI']
-    debugTimeStamp   string   if not None, then overrides the calculated timestamp. Used for unit tests.
-    debugNonce       string   if not None, then overrides the calculated nonce. Used for unit tests.
-    bodyHash         string   set to None - current implementation of OCLC's OAuth2 does not use body hashing
-    authParams       dict     custom list of authentication parameters - used for some specialized APIs
-    user             object   a user object associated with the key. See user.py in the authliboclc library folder.
+    valid_options     dict     list of valid options that can be passed to this class
+    key               string   the clientID (public) portion of the WSKey
+    secret            string   the secret (private) portion of the WSKey
+    redirect_uri      string   the url of the web app, for example https://localhost:8000/auth/
+    services          list     the web services associated with the WSKey, for example ['WorldCatMetadataAPI']
+    debug_time_stamp  string   if not None, then overrides the calculated timestamp. Used for unit tests.
+    debug_nonce       string   if not None, then overrides the calculated nonce. Used for unit tests.
+    body_hash         string   set to None - current implementation of OCLC's OAuth2 does not use body hashing
+    auth_params       dict     custom list of authentication parameters - used for some specialized APIs
+    user              object   a user object associated with the key. See user.py in the authliboclc library folder.
     """
 
-    validOptions = ['redirectUri', 'services']
+    valid_options = ['redirect_uri', 'services']
     key = None
     secret = None
-    redirectUri = None
+    redirect_uri = None
     services = None
-    debugTimestamp = None
-    debugNonce = None
-    bodyHash = None
-    authParams = None
+    debug_time_stamp = None
+    debug_nonce = None
+    body_hash = None
+    auth_params = None
     user = None
 
     def __init__(self, key, secret, options=None):
@@ -88,7 +86,7 @@ class Wskey(object):
           key: string, the clientID (public) portion of the WSKey
           secret: string, the secret (private) portion of the WSKey
           options: dict
-                   - redirectUri: string, the url that the client authenticates from
+                   - redirect_uri: string, the url that the client authenticates from
                                   ie, https://localhost:8000/auth/
                    - services: list, the services associated with the key
                                ie, ['WMS_ACQ','WorldCatMetadataAPI']
@@ -103,16 +101,16 @@ class Wskey(object):
         self.key = key
         self.secret = secret
 
-        """If options are included, they must include a redirectUri and one or more services."""
+        """If options are included, they must include a redirect_uri and one or more services."""
         if options != None and len(options) > 0:
-            if not 'redirectUri' in options:
-                raise InvalidParameter('Missing redirectUri option.')
-            elif options['redirectUri'] == None:
-                raise InvalidParameter('redirectUri must contain a value.')
+            if not 'redirect_uri' in options:
+                raise InvalidParameter('Missing redirect_uri option.')
+            elif options['redirect_uri'] == None:
+                raise InvalidParameter('redirect_uri must contain a value.')
             else:
-                scheme = urlparse(options['redirectUri']).scheme
+                scheme = urlparse(options['redirect_uri']).scheme
                 if scheme != 'http' and scheme != 'https':
-                    raise InvalidParameter('Invalid redirectUri. Must begin with http:// or https://')
+                    raise InvalidParameter('Invalid redirect_uri. Must begin with http:// or https://')
 
             if not 'services' in options:
                 raise InvalidParameter('Missing service option.')
@@ -120,42 +118,42 @@ class Wskey(object):
                 raise InvalidParameter('A list containing at least one service is required.')
 
             for key, value in options.items():
-                if key in Wskey.validOptions:
+                if key in Wskey.valid_options:
                     setattr(self, key, value)
 
 
-    def getLoginUrl(self, authenticatingInstitutionId=None, contextInstitutionId=None):
+    def get_login_url(self, authenticating_institution_id=None, context_institution_id=None):
         """Creates a login url.
 
         Args:
-            authenticatingInstitutionId: string, the institution which the user authenticates against
-            contextInstitutionId: string, the institution which the user will make requests against
+            authenticating_institution_id: string, the institution which the user authenticates against
+            context_institution_id: string, the institution which the user will make requests against
 
         Returns:
             string, the login URL to be used to authenticate the user
         """
-        if authenticatingInstitutionId == None:
+        if authenticating_institution_id == None:
             raise InvalidParameter('You must pass an authenticating institution ID')
-        if contextInstitutionId == None:
+        if context_institution_id == None:
             raise InvalidParameter('You must pass a context institution ID')
 
         authCode = AuthCode(**{
-            'clientId': self.key,
-            'authenticatingInstitutionId': authenticatingInstitutionId,
-            'contextInstitutionId': contextInstitutionId,
-            'redirectUri': self.redirectUri,
+            'client_id': self.key,
+            'authenticating_institution_id': authenticating_institution_id,
+            'context_institution_id': context_institution_id,
+            'redirect_uri': self.redirect_uri,
             'scopes': self.services
         })
 
-        return authCode.getLoginUrl()
+        return authCode.get_login_url()
 
-    def getAccessTokenWithAuthCode(self, code=None, authenticatingInstitutionId=None, contextInstitutionId=None):
+    def get_access_token_with_auth_code(self, code=None, authenticating_institution_id=None, context_institution_id=None):
         """Retrieves an Access Token using an Authentication Code
 
         Args:
             code: string, the authentication code returned after the user authenticates
-            authenticatingInstitutionId: string, the institution the user authenticates against
-            contextInstitutionId: string, the institution that the requests will be made against
+            authenticating_institution_id: string, the institution the user authenticates against
+            context_institution_id: string, the institution that the requests will be made against
 
         Returns:
             object, an access token
@@ -163,18 +161,18 @@ class Wskey(object):
 
         if code == None or code == '':
             raise InvalidParameter('You must pass a code')
-        if authenticatingInstitutionId == None or authenticatingInstitutionId == '':
-            raise InvalidParameter('You must pass an authenticatingInstitutionId')
-        if contextInstitutionId == None or contextInstitutionId == '':
-            raise InvalidParameter('You must pass a contextInstitutionId')
+        if authenticating_institution_id == None or authenticating_institution_id == '':
+            raise InvalidParameter('You must pass an authenticating_institution_id')
+        if context_institution_id == None or context_institution_id == '':
+            raise InvalidParameter('You must pass a context_institution_id')
 
         accessToken = AccessToken(**{
-            'grantType': 'authorization_code',
+            'grant_type': 'authorization_code',
             'options': {
                 'code': code,
-                'authenticatingInstitutionId': authenticatingInstitutionId,
-                'contextInstitutionId': contextInstitutionId,
-                'redirectUri': self.redirectUri
+                'authenticating_institution_id': authenticating_institution_id,
+                'context_institution_id': context_institution_id,
+                'redirect_uri': self.redirect_uri
             }
         })
 
@@ -185,31 +183,31 @@ class Wskey(object):
 
         return accessToken
 
-    def getAccessTokenWithClientCredentials(self, authenticatingInstitutionId=None, contextInstitutionId=None,
+    def get_access_token_with_client_credentials(self, authenticating_institution_id=None, context_institution_id=None,
                                             user=None):
         """Retrieves an Access Token using a Client Credentials Grant
 
         Args:
-            authenticatingInstitutionId: string, the institution the user authenticates against
-            contextInstitutionId: string, the institution that the requests will be made against
+            authenticating_institution_id: string, the institution the user authenticates against
+            context_institution_id: string, the institution that the requests will be made against
             user: object, a user object
 
         Returns:
             object, an access token
         """
 
-        if authenticatingInstitutionId == None or authenticatingInstitutionId == '':
+        if authenticating_institution_id == None or authenticating_institution_id == '':
             raise InvalidParameter('You must pass an authenticating_institution_id')
-        if contextInstitutionId == None or contextInstitutionId == '':
+        if context_institution_id == None or context_institution_id == '':
             raise InvalidParameter('You must pass a context_institution_id')
         if self.services == None or self.services == [] or len(self.services) == 0 or self.services == ['']:
             raise InvalidParameter('You must set at least on service on the Wskey')
 
         accessToken = AccessToken(**{
-            'grantType': 'client_credentials',
+            'grant_type': 'client_credentials',
             'options': {
-                'authenticatingInstitutionId': authenticatingInstitutionId,
-                'contextInstitutionId': contextInstitutionId,
+                'authenticating_institution_id': authenticating_institution_id,
+                'context_institution_id': context_institution_id,
                 'scope': self.services
             }
         })
@@ -221,124 +219,124 @@ class Wskey(object):
 
         return accessToken
 
-    def getHMACSignature(self, method=None, requestUrl=None, options=None):
+    def get_hmac_signature(self, method=None, request_url=None, options=None):
         """Signs a url with an HMAC signature and builds an Authorization header
 
         Args:
             method: string, GET, POST, PUT, DELETE, etc.
-            requestUrl: string, the url to be signed
+            request_url: string, the url to be signed
             options: dict
                      - user: object, a user object
                      - authparams: dict, various key value pairs to be added to the authorization header. For example,
                                    userid and password. Depends on the API and its specialized needs.
 
         Returns:
-            authorizationHeader: string, the Authorization header to be added to the request.
+            authorization_header: string, the Authorization header to be added to the request.
         """
 
         if self.secret == None or self.secret == '':
             raise InvalidParameter('You must construct a WSKey with a secret to build an HMAC Signature.')
         if method == None or method == '':
             raise InvalidParameter('You must pass an HTTP Method to build an HMAC Signature.')
-        if requestUrl == None or requestUrl == '':
+        if request_url == None or request_url == '':
             raise InvalidParameter('You must pass a valid request URL to build an HMAC Signature.')
 
         if options != None:
             for key, value in options.items():
                 setattr(self, key, value)
 
-        timestamp = self.debugTimestamp
+        timestamp = self.debug_time_stamp
         if timestamp == None or timestamp == '':
             timestamp = str(int(time.time()))
 
-        nonce = self.debugNonce
+        nonce = self.debug_nonce
         if nonce == None or nonce == '':
             nonce = str(hex(int(math.floor(random.random() * 4026531839 + 268435456))))
 
-        signature = self.signRequest(**{
+        signature = self.sign_request(**{
             'method': method,
-            'requestUrl': requestUrl,
+            'request_url': request_url,
             'timestamp': timestamp,
             'nonce': nonce})
 
         q = '"'
         qc = '",'
 
-        authorizationHeader = ("http://www.worldcat.org/wskey/v2/hmac/v1 " +
-                               "clientId=" + q + self.key + qc +
+        authorization_header = ("http://www.worldcat.org/wskey/v2/hmac/v1 " +
+                               "clientID=" + q + self.key + qc +
                                "timestamp=" + q + timestamp + qc +
                                "nonce=" + q + nonce + qc +
                                "signature=" + q + signature)
 
-        if self.user != None or self.authParams != None:
-            authorizationHeader += (qc + self.AddAuthParams(self.user, self.authParams))
+        if self.user != None or self.auth_params != None:
+            authorization_header += (qc + self.add_auth_params(self.user, self.auth_params))
         else:
-            authorizationHeader += q
+            authorization_header += q
 
-        return authorizationHeader
+        return authorization_header
 
 
-    def signRequest(self, method, requestUrl, timestamp, nonce):
+    def sign_request(self, method, request_url, timestamp, nonce):
         """Requests a normalized request and hashes it
 
         Args:
             method: string, GET, POST, etc.
-            requestUrl: string, the URL to be hashed
+            request_url: string, the URL to be hashed
             timestamp: string, POSIX time
             nonce: string, a random 32 bit integer expressed in hexadecimal format
 
         Returns:
             A base 64 encoded SHA 256 HMAC hash
         """
-        normalizedRequest = self.normalizeRequest(**{
+        normalized_request = self.normalize_request(**{
             'method': method,
-            'requestUrl': requestUrl,
+            'request_url': request_url,
             'timestamp': timestamp,
             'nonce': nonce
         })
 
-        digest = hmac.new(self.secret, msg=normalizedRequest, digestmod=hashlib.sha256).digest()
+        digest = hmac.new(self.secret, msg=normalized_request, digestmod=hashlib.sha256).digest()
         return str(base64.b64encode(digest).decode())
 
 
-    def normalizeRequest(self, method, requestUrl, timestamp, nonce):
+    def normalize_request(self, method, request_url, timestamp, nonce):
         """Prepares a normalized request for hashing
 
          Args:
             method: string, GET, POST, etc.
-            requestUrl: string, the URL to be hashed
+            request_url: string, the URL to be hashed
             timestamp: string, POSIX time
             nonce: string, a random 32 bit integer expressed in hexadecimal format
 
         Returns:
-            normalizedRequest: string, the normalized request to be hashed
+            normalized_request: string, the normalized request to be hashed
         """
-        signatureUrl = SIGNATURE_URL
-        parsedSignatureUrl = urlparse(urllib.unquote(signatureUrl).decode('utf-8'))
-        parsedRequestUrl = urlparse(urllib.unquote(requestUrl).decode('utf-8'))
+        signature_url = SIGNATURE_URL
+        parsed_signature_url = urlparse(urllib.unquote(signature_url).decode('utf-8'))
+        parsed_request_url = urlparse(urllib.unquote(request_url).decode('utf-8'))
 
-        host = str(parsedSignatureUrl.netloc)
+        host = str(parsed_signature_url.netloc)
 
-        if parsedSignatureUrl.port != None:
-            port = str(parsedSignatureUrl.port)
+        if parsed_signature_url.port != None:
+            port = str(parsed_signature_url.port)
         else:
-            if str(parsedSignatureUrl.scheme) == 'http':
+            if str(parsed_signature_url.scheme) == 'http':
                 port = '80'
-            elif str(parsedSignatureUrl.scheme) == 'https':
+            elif str(parsed_signature_url.scheme) == 'https':
                 port = '443'
 
-        path = str(parsedSignatureUrl.path)
+        path = str(parsed_signature_url.path)
 
         """ OCLC's OAuth implementation does not currently use body hashing, so this should always be ''."""
-        bodyHash = ''
-        if self.bodyHash != None:
-            bodyHash = self.bodyHash
+        body_hash = ''
+        if self.body_hash != None:
+            body_hash = self.body_hash
 
         """The base normalized request."""
-        normalizedRequest = (self.key + '\n' +
+        normalized_request = (self.key + '\n' +
                              timestamp + '\n' +
                              nonce + '\n' +
-                             bodyHash + '\n' +
+                             body_hash + '\n' +
                              method + '\n' +
                              host + '\n' +
                              port + '\n' +
@@ -346,8 +344,8 @@ class Wskey(object):
 
         """Add the request parameters to the normalized request."""
         parameters = {}
-        if parsedRequestUrl.query != None:
-            for param in parsedRequestUrl.query.split('&'):
+        if parsed_request_url.query != None:
+            for param in parsed_request_url.query.split('&'):
                 key = (param.split('='))[0]
                 value = (param.split('='))[1]
                 parameters[key] = value
@@ -358,30 +356,30 @@ class Wskey(object):
             nameAndValue = nameAndValue.replace('+', '%20')
             nameAndValue = nameAndValue.replace('*', '%2A')
             nameAndValue = nameAndValue.replace('%7E', '~')
-            normalizedRequest += nameAndValue + '\n'
+            normalized_request += nameAndValue + '\n'
 
-        return normalizedRequest
+        return normalized_request
 
 
-    def AddAuthParams(self, user, authParams):
+    def add_auth_params(self, user, auth_params):
         """Adds users custom authentication parameters, if any, to the Normalized request
 
         Args:
             user: object, a user object
-            authParams: dict, a list of parameters to add the custom parameters to
+            auth_params: dict, a list of parameters to add the custom parameters to
 
         Returns:
-            authValuePairs: dict, the authParams with any custom parameters added to them
+            authValuePairs: dict, the auth_params with any custom parameters added to them
         """
         authValuePairs = ''
-        combinedParams = copy.copy(authParams)
+        combinedParams = copy.copy(auth_params)
 
         if combinedParams == None or combinedParams == '':
             combinedParams = {}
 
         if user != None:
-            combinedParams['principalID'] = user.principalID
-            combinedParams['principalIDNS'] = user.principalIDNS
+            combinedParams['principalID'] = user.principal_id
+            combinedParams['principalIDNS'] = user.principal_idns
 
         counter = 0
 
@@ -400,11 +398,11 @@ class Wskey(object):
         ret = ''
         ret += '\tkey:\t\t' + str(self.key) + "\n"
         ret += '\tsecret:\t\t' + str(self.secret) + "\n"
-        ret += '\tredirectUri:\t' + str(self.redirectUri) + "\n"
+        ret += '\tredirect_uri:\t' + str(self.redirect_uri) + "\n"
         ret += '\tservices:\t' + str(self.services) + "\n"
-        ret += '\tdebugTimestamp:\t' + str(self.debugTimestamp) + "\n"
-        ret += '\tdebugNonce:\t' + str(self.debugNonce) + "\n"
-        ret += '\tbodyHash:\t' + str(self.bodyHash) + "\n"
-        ret += '\tauthParams:\t' + str(self.authParams) + "\n"
+        ret += '\tdebug_time_stamp:\t' + str(self.debug_time_stamp) + "\n"
+        ret += '\tdebug_nonce:\t' + str(self.debug_nonce) + "\n"
+        ret += '\tbody_hash:\t' + str(self.body_hash) + "\n"
+        ret += '\tauth_params:\t' + str(self.auth_params) + "\n"
         ret += '\tuser:\t\t' + str(self.user) + "\n"
         return ret

@@ -28,11 +28,11 @@ class WskeyTests(unittest.TestCase):
     """ Create a mock wskey object."""
 
     def setUp(self):
-        self._myWskey = wskey.Wskey(**{
+        self._my_wskey = wskey.Wskey(**{
             'key': 'CancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM',
             'secret': 'YeZfIJdGYUeatxQOjekRZw==',
             'options': {
-                'redirectUri': 'http://www.oclc.org/test',
+                'redirect_uri': 'http://www.oclc.org/test',
                 'services': [
                     'WMS_NCIP',
                     'WMS_ACQ'
@@ -43,7 +43,7 @@ class WskeyTests(unittest.TestCase):
     """ Verify valid options list is correct."""
 
     def testValidOptions(self):
-        self.assertEqual(wskey.Wskey.validOptions, ['redirectUri', 'services'])
+        self.assertEqual(wskey.Wskey.valid_options, ['redirect_uri', 'services'])
 
     """ Make sure WSKey creation with invalid parameters raises exceptions. """
 
@@ -53,24 +53,24 @@ class WskeyTests(unittest.TestCase):
         with self.assertRaises(wskey.InvalidParameter):
             wskey.Wskey('123ABC', '987', {'services': ['one', 'two']})
         with self.assertRaises(wskey.InvalidParameter):
-            wskey.Wskey('123ABC', '987', {'redirectUri': '', 'services': ['one', 'two']})
+            wskey.Wskey('123ABC', '987', {'redirect_uri': '', 'services': ['one', 'two']})
         with self.assertRaises(wskey.InvalidParameter):
-            wskey.Wskey('123ABC', '987', {'redirectUri': 'www.mylibrary123.org/myapp', 'services': ['one', 'two']})
+            wskey.Wskey('123ABC', '987', {'redirect_uri': 'www.mylibrary123.org/myapp', 'services': ['one', 'two']})
         with self.assertRaises(wskey.InvalidParameter):
-            wskey.Wskey('123ABC', '987', {'redirectUri': 'http://www.mylibrary123.org/myapp', 'services': None})
+            wskey.Wskey('123ABC', '987', {'redirect_uri': 'http://www.mylibrary123.org/myapp', 'services': None})
         with self.assertRaises(wskey.InvalidParameter):
-            wskey.Wskey('123ABC', '987', {'redirectUri': 'http://www.mylibrary123.org/myapp', 'services': ''})
+            wskey.Wskey('123ABC', '987', {'redirect_uri': 'http://www.mylibrary123.org/myapp', 'services': ''})
         with self.assertRaises(wskey.InvalidParameter):
-            wskey.Wskey('123ABC', '987', {'redirectUri': 'http://www.mylibrary123.org/myapp', 'services': []})
+            wskey.Wskey('123ABC', '987', {'redirect_uri': 'http://www.mylibrary123.org/myapp', 'services': []})
 
     """ Check the parameters of the mock wskey to see if it was created properly. """
 
     def testCreateWskey(self):
-        self.assertEqual(self._myWskey.key,
+        self.assertEqual(self._my_wskey.key,
                          'CancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM')
-        self.assertEqual(self._myWskey.secret, 'YeZfIJdGYUeatxQOjekRZw==')
-        self.assertEqual(self._myWskey.redirectUri, 'http://www.oclc.org/test')
-        self.assertEqual(self._myWskey.services, ['WMS_NCIP', 'WMS_ACQ'])
+        self.assertEqual(self._my_wskey.secret, 'YeZfIJdGYUeatxQOjekRZw==')
+        self.assertEqual(self._my_wskey.redirect_uri, 'http://www.oclc.org/test')
+        self.assertEqual(self._my_wskey.services, ['WMS_NCIP', 'WMS_ACQ'])
 
     """ Verify that the generation of a login URL from a WSKey is correct."""
 
@@ -84,9 +84,9 @@ class WskeyTests(unittest.TestCase):
             '&response_type=code' +
             '&scope=WMS_NCIP WMS_ACQ')
 
-        self.assertEqual(self._myWskey.getLoginUrl(**{
-            'authenticatingInstitutionId': '128807',
-            'contextInstitutionId': '128808'
+        self.assertEqual(self._my_wskey.get_login_url(**{
+            'authenticating_institution_id': '128807',
+            'context_institution_id': '128808'
         }), expectedResult)
 
 
@@ -94,33 +94,33 @@ class WskeyTests(unittest.TestCase):
 
     def testGetAccessTokenWithAuthCode(self):
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithAuthCode(**{
-                'authenticatingInstitutionId': None,
-                'contextInstitutionId': '128808',
+            self._my_wskey.get_access_token_with_auth_code(**{
+                'authenticating_institution_id': None,
+                'context_institution_id': '128808',
                 'code': 'unknown',
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithAuthCode(**{
-                'authenticatingInstitutionId': '',
-                'contextInstitutionId': '128808',
+            self._my_wskey.get_access_token_with_auth_code(**{
+                'authenticating_institution_id': '',
+                'context_institution_id': '128808',
                 'code': 'unknown',
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithAuthCode(**{
-                'authenticatingInstitutionId': '128807',
-                'contextInstitutionId': None,
+            self._my_wskey.get_access_token_with_auth_code(**{
+                'authenticating_institution_id': '128807',
+                'context_institution_id': None,
                 'code': 'unknown',
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithAuthCode(**{
-                'authenticatingInstitutionId': '128807',
-                'contextInstitutionId': '',
+            self._my_wskey.get_access_token_with_auth_code(**{
+                'authenticating_institution_id': '128807',
+                'context_institution_id': '',
                 'code': 'unknown',
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithAuthCode(**{
-                'authenticatingInstitutionId': '128807',
-                'contextInstitutionId': '128808',
+            self._my_wskey.get_access_token_with_auth_code(**{
+                'authenticating_institution_id': '128807',
+                'context_institution_id': '128808',
                 'code': None,
             })
 
@@ -128,53 +128,53 @@ class WskeyTests(unittest.TestCase):
 
     def testGetAccessTokenWithClientCredentials(self):
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithClientCredentials(**{
-                'authenticatingInstitutionId': None,
-                'contextInstitutionId': '12808',
+            self._my_wskey.get_access_token_with_client_credentials(**{
+                'authenticating_institution_id': None,
+                'context_institution_id': '12808',
                 'user': None
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithClientCredentials(**{
-                'authenticatingInstitutionId': '',
-                'contextInstitutionId': '12808',
+            self._my_wskey.get_access_token_with_client_credentials(**{
+                'authenticating_institution_id': '',
+                'context_institution_id': '12808',
                 'user': None
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithClientCredentials(**{
-                'authenticatingInstitutionId': '128807',
-                'contextInstitutionId': None,
+            self._my_wskey.get_access_token_with_client_credentials(**{
+                'authenticating_institution_id': '128807',
+                'context_institution_id': None,
                 'user': None
             })
         with self.assertRaises(wskey.InvalidParameter):
-            self._myWskey.getAccessTokenWithClientCredentials(**{
-                'authenticatingInstitutionId': '128807',
-                'contextInstitutionId': '',
+            self._my_wskey.get_access_token_with_client_credentials(**{
+                'authenticating_institution_id': '128807',
+                'context_institution_id': '',
                 'user': None
             })
 
     """ Verify that the calculation of an Authentication Header is correct. """
 
-    def testgetHMACSignature(self):
-        self._myWskey.debugTimestamp = '1392239490'
-        self._myWskey.debugNonce = '0x16577027'
+    def testget_hmac_signature(self):
+        self._my_wskey.debug_time_stamp = '1392239490'
+        self._my_wskey.debug_nonce = '0x16577027'
 
-        AuthenticationHeader = self._myWskey.getHMACSignature(**{
+        AuthenticationHeader = self._my_wskey.get_hmac_signature(**{
             'method': 'GET',
-            'requestUrl': ('https://worldcat.org/bib/data/1039085' +
+            'request_url': ('https://worldcat.org/bib/data/1039085' +
                            '?inst=128807' +
                            '&classificationScheme=LibraryOfCongress' +
                            '&holdingLibraryCode=MAIN'),
             'options': {
                 'user': user.User(**{
-                    'principalID': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
-                    'principalIDNS': 'urn:oclc:wms:ad',
-                    'authenticatingInstitutionID': '128807'}),
-                'authParams': {'userid': 'tasty', 'password': 'buffet'}
+                    'principal_id': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
+                    'principal_idns': 'urn:oclc:wms:ad',
+                    'authenticating_institution_id': '128807'}),
+                'auth_params': {'userid': 'tasty', 'password': 'buffet'}
             }
         })
 
         expected = ('http://www.worldcat.org/wskey/v2/hmac/v1 ' +
-                    'clientId="CancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM",' +
+                    'clientID="CancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM",' +
                     'timestamp="1392239490",' +
                     'nonce="0x16577027",' +
                     'signature="+RFPwih61799mpNBJqGhhSbQgd/JRfEinYv81z+CwRY=",' +
@@ -189,9 +189,9 @@ class WskeyTests(unittest.TestCase):
     """ Verify the correctness of the hashing algorithm. """
 
     def testSignRequest(self):
-        signature = self._myWskey.signRequest(**{
+        signature = self._my_wskey.sign_request(**{
             'method': 'GET',
-            'requestUrl': ('https://worldcat.org/bib/data/1039085' +
+            'request_url': ('https://worldcat.org/bib/data/1039085' +
                            '?inst=128807' +
                            '&classificationScheme=LibraryOfCongress' +
                            '&holdingLibraryCode=MAIN'),
@@ -206,9 +206,9 @@ class WskeyTests(unittest.TestCase):
     """ Verify that a Normalized Request is generated properly. """
 
     def testNormalizedRequest(self):
-        normalizedRequest = self._myWskey.normalizeRequest(**{
+        normalized_request = self._my_wskey.normalize_request(**{
             'method': 'GET',
-            'requestUrl': ('https://worldcat.org/bib/data/1039085' +
+            'request_url': ('https://worldcat.org/bib/data/1039085' +
                            '?inst=128807' +
                            '&classificationScheme=LibraryOfCongress' +
                            '&holdingLibraryCode=MAIN'),
@@ -227,49 +227,49 @@ class WskeyTests(unittest.TestCase):
                     'holdingLibraryCode=MAIN\n' +
                     'inst=128807\n')
 
-        self.assertEqual(normalizedRequest, expected)
+        self.assertEqual(normalized_request, expected)
 
     """ If User and Auth parameters exist, make sure they are added to the Authentication Header. """
 
-    def testAddAuthParams(self):
-        myUser = user.User(**{
-            'principalID': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
-            'principalIDNS': 'urn:oclc:wms:ad',
-            'authenticatingInstitutionID': '128807'
+    def testadd_auth_params(self):
+        my_user = user.User(**{
+            'principal_id': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
+            'principal_idns': 'urn:oclc:wms:ad',
+            'authenticating_institution_id': '128807'
         })
 
-        authParams = {'userid': 'tasty', 'password': 'buffet'}
+        auth_params = {'userid': 'tasty', 'password': 'buffet'}
 
         """ Both User and Auth params exists """
-        self.assertEqual(self._myWskey.AddAuthParams(**{'user': myUser, 'authParams': authParams}),
+        self.assertEqual(self._my_wskey.add_auth_params(**{'user': my_user, 'auth_params': auth_params}),
                          ('password="buffet",' +
                           'principalID="8eaa9f92-3951-431c-975a-e5dt26b7d232",' +
                           'principalIDNS="urn:oclc:wms:ad",' +
                           'userid="tasty"'))
 
         """ Just User params """
-        self.assertEqual(self._myWskey.AddAuthParams(**{'user': myUser, 'authParams': None}),
+        self.assertEqual(self._my_wskey.add_auth_params(**{'user': my_user, 'auth_params': None}),
                          'principalID="8eaa9f92-3951-431c-975a-e5dt26b7d232",principalIDNS="urn:oclc:wms:ad"')
 
         """ Just Auth params """
-        self.assertEqual(self._myWskey.AddAuthParams(**{'user': None, 'authParams': authParams}),
+        self.assertEqual(self._my_wskey.add_auth_params(**{'user': None, 'auth_params': auth_params}),
                          'password="buffet",userid="tasty"')
 
         """ Neither User nor Auth params exist."""
-        self.assertEqual(self._myWskey.AddAuthParams(**{'user': None, 'authParams': None}), '')
+        self.assertEqual(self._my_wskey.add_auth_params(**{'user': None, 'auth_params': None}), '')
 
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
-        self.assertEqual(str(self._myWskey), (
+        self.assertEqual(str(self._my_wskey), (
             "\tkey:\t\tCancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM\n" +
             "\tsecret:\t\tYeZfIJdGYUeatxQOjekRZw==\n" +
-            "\tredirectUri:\thttp://www.oclc.org/test\n" +
+            "\tredirect_uri:\thttp://www.oclc.org/test\n" +
             "\tservices:\t['WMS_NCIP', 'WMS_ACQ']\n" +
-            "\tdebugTimestamp:\tNone\n" +
-            "\tdebugNonce:\tNone\n" +
-            "\tbodyHash:\tNone\n" +
-            "\tauthParams:\tNone\n" +
+            "\tdebug_time_stamp:\tNone\n" +
+            "\tdebug_nonce:\tNone\n" +
+            "\tbody_hash:\tNone\n" +
+            "\tauth_params:\tNone\n" +
             "\tuser:\t\tNone\n")
         )
 

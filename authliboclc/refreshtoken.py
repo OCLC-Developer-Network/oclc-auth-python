@@ -24,8 +24,6 @@
 
 """
 
-__author__ = 'campbelg@oclc.org (George Campbell)'
-
 import time
 from time import mktime
 
@@ -41,47 +39,47 @@ class RefreshToken(object):
     """Class represents a refresh token
 
     Class Variables:
-        refreshToken   string   the refresh token string value
-        expiresAt      string   the ISO 8601 time that the refresh token expires at
-        expiresIn      int      the number of seconds until the token expires
+        refresh_token   string   the refresh token string value
+        expires_at      string   the ISO 8601 time that the refresh token expires at
+        expires_in      int      the number of seconds until the token expires
     """
-    refreshToken = None
-    expiresIn = None
-    expiresAt = None
+    refresh_token = None
+    expires_in = None
+    expires_at = None
 
-    def __init__(self, tokenValue=None, expiresIn=None, expiresAt=None):
+    def __init__(self, tokenValue=None, expires_in=None, expires_at=None):
         """Constructor.
 
         Args:
             tokenValue: string, the refresh token string value
-            expiresAt: string, the ISO 8601 time that the refresh token expires at
-            expiresIn: int, the number of seconds until the token expires
+            expires_at: string, the ISO 8601 time that the refresh token expires at
+            expires_in: int, the number of seconds until the token expires
         """
-        if tokenValue == None or expiresIn == None or expiresAt == None:
-            raise InvalidParameter('You must pass these parameters: tokenValue, expiresIn and expiresAt')
+        if tokenValue == None or expires_in == None or expires_at == None:
+            raise InvalidParameter('You must pass these parameters: tokenValue, expires_in and expires_at')
 
-        if type(expiresIn) is not int:
-            raise InvalidParameter('expiresIn must be an int')
+        if type(expires_in) is not int:
+            raise InvalidParameter('expires_in must be an int')
 
-        self.refreshToken = tokenValue
-        self.expiresIn = expiresIn
-        self.expiresAt = expiresAt
+        self.refresh_token = tokenValue
+        self.expires_in = expires_in
+        self.expires_at = expires_at
 
-    def isExpired(self):
+    def is_expired(self):
         """ Test if the refresh token is expired
 
         Returns:
             isExpired: boolean, true if refresh token is expired
         """
         status = False
-        if mktime(time.strptime(self.expiresAt, "%Y-%m-%d %H:%M:%SZ")) < time.time():
+        if mktime(time.strptime(self.expires_at, "%Y-%m-%d %H:%M:%SZ")) < time.time():
             status = True
         return status
 
     def __str__(self):
         ret = ''
-        ret += '\trefreshToken:\t' + str(self.refreshToken) + "\n"
-        ret += '\t\texpiresIn:\t' + str(self.expiresIn) + "\n"
-        ret += '\t\texpiresAt:\t' + str(self.expiresAt) + "\n"
+        ret += '\trefresh_token:\t' + str(self.refresh_token) + "\n"
+        ret += '\t\texpires_in:\t' + str(self.expires_in) + "\n"
+        ret += '\t\texpires_at:\t' + str(self.expires_at) + "\n"
 
         return ret
