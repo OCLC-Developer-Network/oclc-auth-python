@@ -32,7 +32,7 @@ key = '{clientID}'
 secret = '{secret}'
 principal_id = '{principalID}'
 principal_idns = '{principalIDNS}'
-authenticating_institution_id = '{institutionID}'  # 128807 = Sandbox Institution
+authenticating_institution_id = '{institutionID}'
 
 request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
 
