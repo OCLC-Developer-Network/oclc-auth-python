@@ -9,10 +9,13 @@ This example demonstrates how to retrieve an access token, and has the following
 
 To use the example:
 
-1. Edit access_token.py to insert your WSKey parameters:
+1. Change directories to `examples/authentication_token`
 
-   `KEY = '{clientID}`
-   `SECRET = '{secret}'`
+1. Edit access_token.py to insert your WSKey parameters:
+   <pre>
+   KEY = '{clientID}'
+   SECRET = '{secret}'
+   </pre>
 
 1. From the command line:
 
