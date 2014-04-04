@@ -56,6 +56,8 @@ This example demonstrates how to retrieve an access token, and has the following
 
 To use the example:
 
+1. Change directories to `examples/authentication_token`
+
 1. Edit access_token.py to insert your WSKey parameters:
 
    `KEY = '{clientID}`
