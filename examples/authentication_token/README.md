@@ -1,9 +1,9 @@
 ###User Authentication and Access Token Example
 
 This example demonstrates how to retrieve an access token, and has the following features:
-* HTTP Secure authentication
-* Acquiring an Access Token
-* Storing the Access Token in a Session so the user doesn't have to authenticate twice
+* HTTP Secure authentication.
+* Acquiring an Access Token.
+* Storing the Access Token in a Session so the user doesn't have to authenticate twice.
 * Using the Access Token to request a Bibliographic Record from OCLC.
 
 1. Edit access_token.py to insert your WSKey parameters:
