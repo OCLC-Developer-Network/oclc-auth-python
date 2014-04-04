@@ -59,9 +59,10 @@ To use the example:
 1. Change directories to `examples/authentication_token`
 
 1. Edit access_token.py to insert your WSKey parameters:
-
-   `KEY = '{clientID}`
-   `SECRET = '{secret}'`
+   <pre>
+   KEY = '{clientID}'
+   SECRET = '{secret}'
+   </pre>
 
 1. From the command line:
 
