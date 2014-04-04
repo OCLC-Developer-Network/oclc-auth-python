@@ -25,3 +25,4 @@ credentials.txt
 security.sh
 switcher.py
 MANIFEST
+*.p

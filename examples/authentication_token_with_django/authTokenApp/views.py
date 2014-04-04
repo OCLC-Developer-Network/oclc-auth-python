@@ -67,7 +67,7 @@ def index(request):
         """This won't work."""
         redirect_uri = 'http://' + request.get_host() + request.path  # http://localhost:8000/auth/
 
-    """Populate the WSKey object its parameters"""
+    """Populate the WSKey object's parameters"""
     my_wskey = wskey.Wskey(**{
         'key': key,
         'secret': secret,
@@ -148,11 +148,8 @@ def index(request):
     return response
 
 
-"""Display all the parameters of the Access Token"""
-
-
 def format_access_token(access_token):
-
+    """Display all the parameters of the Access Token"""
     print(access_token)
 
     ret = '<h2>Access Token</h2>'
@@ -185,10 +182,9 @@ def format_access_token(access_token):
     return ret
 
 
-"""Use an Access Token's User Parameter to request a Bibliographic Record"""
-
 
 def get_bib_record(access_token, wskey):
+    """Use an Access Token's User Parameter to request a Bibliographic Record"""
     request_url = (
         'https://worldcat.org/bib/data/823520553?' +
         'classificationScheme=LibraryOfCongress' +
