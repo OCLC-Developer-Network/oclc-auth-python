@@ -19,7 +19,7 @@ To use the example:
 
 1. From the command line:
 
-    `python access_token.py`
+    `python server.py`
 
 1. Navigate your browser to:
 
@@ -27,3 +27,5 @@ To use the example:
 
     Do not be concerned about "security warnings" - click through them. That is expected with the supplied, unsigned
     CACERT in server.pem. In production, you will use your institution's signed CACERT when implementing SSL.
+
+Note that this example writes sessions to a flat file, sessions.p. So it will need read/write access to the authentication_token directory.

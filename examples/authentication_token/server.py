@@ -28,15 +28,27 @@ PORT = 8000
 """Authentication parameters."""
 KEY = '{clientID}'
 SECRET = '{secret}'
-AUTHENTICATING_INSTITUTION_ID = '128807' # default value for Sandbox institution
-CONTEXT_INSTITUTION_ID =        '128807' # default value for Sandbox institution
-SERVICES = ['WorldCatMetadataAPI']  #refresh_token
+
+AUTHENTICATING_INSTITUTION_ID = '128807'  # default value for Sandbox institution
+CONTEXT_INSTITUTION_ID = '128807'  # default value for Sandbox institution
+SERVICES = ['WorldCatMetadataAPI', 'refresh_token']
 REDIRECT_URI = 'https://localhost:8000/auth/'
 
 
 class Request(SimpleHTTPRequestHandler):
     """This is a general purpose request handler. We focus on /auth/ and managing access tokens."""
+
     def do_GET(self):
+
+        if KEY == '{clientID}':
+            """The developer forgot to insert authentication parameters into the example."""
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            self.wfile.write('<h2>Please set the authentication parameters in ' +
+                             '<span style="color:red">access_token.py</span>, ' +
+                             'lines 29 & 30.</h2>')
+            return
 
         if (self.path[:6] != '/auth/'):
             """Handle other, non authentication requests here. For example, loading the favicon.ico"""
@@ -77,7 +89,7 @@ class Request(SimpleHTTPRequestHandler):
 
         """If there are error parameters on the current URL, load them."""
         error = self.headers.get('error', None)
-        errorDescription = self.headers.get('error_description', None)
+        error_description = self.headers.get('error_description', None)
 
         if access_token is None and code is None:
             """There is no access token and no authentication code. Initiate user authentication."""
@@ -99,7 +111,7 @@ class Request(SimpleHTTPRequestHandler):
 
             if error is not None:
                 """If an error was returned, display it."""
-                html = ''.join([html, '<p class="error">Error: ', error, '<br>', errorDescription, '</p>'])
+                html = ''.join([html, '<p class="error">Error: ', error, '<br>', error_description, '</p>'])
 
             if access_token is None and code is not None:
                 """Request an access token using the user authentication code returned after the user authenticated"""

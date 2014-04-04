@@ -66,7 +66,7 @@ To use the example:
 
 1. From the command line:
 
-    `python access_token.py`
+    `python server.py`
 
 1. Navigate your browser to:
 

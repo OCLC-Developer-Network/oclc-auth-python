@@ -6,6 +6,16 @@ from time import time
 
 
 class SessionHandler():
+    """ This is a simple flat file session handler. In a production example, you might keep track of sessions
+        in a mySQL database.
+
+        The sessions are stored in a simple dict object
+        {
+            session id : pickled access token object,
+            session id : pickled access token object,
+            ...
+        }
+    """
     _cookie = None
     _headers = None
     _session_id = None
