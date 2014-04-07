@@ -17,20 +17,24 @@
 # to run this test from the command line: python -m tests.accesstoken_test
 
 import unittest
-from authliboclc import accesstoken
-from authliboclc import user
-from authliboclc import refreshtoken
+from authliboclc import accesstoken, user, refreshtoken
 
 
 class AccessTokenTests(unittest.TestCase):
     """ Create a mock access token. """
 
     def setUp(self):
+        self._my_refresh_token = refreshtoken.RefreshToken(
+            tokenValue='rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W',
+            expires_in=1199,
+            expires_at='2014-03-13 15:44:59Z'
+        )
+
         self._options = {'scope': ['WMS_NCIP', 'WMS_ACQ'],
                          'authenticating_institution_id': '128807',
                          'context_institution_id': '128808',
                          'redirect_uri': 'ncip://testapp',
-                         'refresh_token': 'tk_1234',
+                         'refresh_token': self._my_refresh_token,
                          'code': 'unknown'}
 
         self._myAccessToken = accesstoken.AccessToken('authorization_code',
@@ -67,7 +71,7 @@ class AccessTokenTests(unittest.TestCase):
             'client_credentials'
         ]
         self.assertEqual(grant_types, validGrantTypes, 'Grant types must be authorization_code, refresh_token, '
-                                                      'client_credentials')
+                                                       'client_credentials')
 
     """ Check that attempts to create Access Tokens work, and incorrect parameters raise exceptions. """
 
@@ -76,7 +80,7 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(self._myAccessToken.authenticating_institution_id, '128807')
         self.assertEqual(self._myAccessToken.context_institution_id, '128808')
         self.assertEqual(self._myAccessToken.redirect_uri, 'ncip://testapp')
-        self.assertEqual(self._myAccessToken.refresh_token, 'tk_1234')
+        self.assertEqual(self._myAccessToken.refresh_token.refresh_token, 'rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W')
         self.assertEqual(self._myAccessToken.code, 'unknown')
 
         with self.assertRaises(accesstoken.InvalidGrantType):
@@ -95,13 +99,15 @@ class AccessTokenTests(unittest.TestCase):
 
         # Tests to make sure there are no missing parameters for client_credentials
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('client_credentials', {'refresh_token': '', 'context_institution_id': '', 'scope': ''})
+            accesstoken.AccessToken('client_credentials',
+                                    {'refresh_token': '', 'context_institution_id': '', 'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('refresh_token',
                                     {'client_credentials': '', 'authenticating_institution_id': '', 'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
             accesstoken.AccessToken('client_credentials',
-                                    {'refresh_token': '', 'authenticating_institution_id': '', 'context_institution_id': ''})
+                                    {'refresh_token': '', 'authenticating_institution_id': '',
+                                     'context_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for refresh_token
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
@@ -157,7 +163,7 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(myAT.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=refresh_token' +
-            '&refresh_token=tk_1234'))
+            '&refresh_token=rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W'))
 
     """ Create a mock token response and verify parsing is corrent. """
 
@@ -207,6 +213,7 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(expectedRefreshToken.expires_at, myAT.refresh_token.expires_at)
 
     """Test that the string representation of the class is complete."""
+
     def testStringRepresenationOfClass(self):
         self.assertEqual(str(self._myAccessToken), (
             'access_token_url:\t\t\thttps://authn.sd00.worldcat.org/oauth2/accessToken?\n' +
@@ -224,13 +231,17 @@ class AccessTokenTests(unittest.TestCase):
             'expires_at:\t\t\tNone\n' +
             'expires_in:\t\t\tNone\n' +
             'grant_type:\t\t\tauthorization_code\n' +
-            'options:\t\t\tNone\n' + 'redirect_uri:\t\t\tncip://testapp\n' +
-            'refresh_token:tk_1234\n' +
-            'scope:\t[\'WMS_NCIP\', \'WMS_ACQ\']\n' +
+            'options:\t\t\tNone\n' +
+            'redirect_uri:\t\t\tncip://testapp\n' +
+            'refresh_token:\trefresh_token:\trt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
+            '\t\texpires_in:\t1199\n' +
+            '\t\texpires_at:\t2014-03-13 15:44:59Z\n' +
+            '\n' + 'scope:\t[\'WMS_NCIP\', \'WMS_ACQ\']\n' +
             'type:\t\t\t\tNone\n' +
             'user:None\n' +
             'wskey:None\n')
         )
+
 
 def main():
     unittest.main()

@@ -250,7 +250,7 @@ class AccessToken(object):
         """ get Access Token URL """
         access_token_url = self.authorization_server + '/accessToken?grant_type=' + self.grant_type
         if self.grant_type == 'refresh_token':
-            access_token_url += '&refresh_token=' + self.refresh_token
+            access_token_url += '&refresh_token=' + self.refresh_token.refresh_token
         elif self.grant_type == 'authorization_code':
             access_token_url += (
                 '&' + 'code=' + self.code +
