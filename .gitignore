@@ -26,3 +26,4 @@ security.sh
 switcher.py
 MANIFEST
 *.p
+*.sh
