@@ -71,6 +71,7 @@ class AccessTokenFormatterTests(unittest.TestCase):
             authenticating_institution_id='128807',
             principal_id='2334ed24-b27e-63bd-8fea-7cw2deq70r8d',
             principal_idns='urn:oclc:platform:128807')
+
         self.assertEqual(self._my_access_token_formatter.format(),
                          '<h2>Access Token</h2>' +
                          '<table class="pure-table">' +
@@ -91,6 +92,7 @@ class AccessTokenFormatterTests(unittest.TestCase):
         self._access_token.error_code = '500'
         self._access_token.error_message = 'No Reply at All'
         self._access_token.error_url = 'http://www.nobody-is-ho.me'
+
         self.assertEqual(self._my_access_token_formatter.format(),
                          '<h2>Access Token</h2>' +
                          '<table class="pure-table">' +
