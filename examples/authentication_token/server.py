@@ -155,5 +155,7 @@ class Request(SimpleHTTPRequestHandler):
 
 httpd = BaseHTTPServer.HTTPServer(('localhost', PORT), Request)
 httpd.socket = ssl.wrap_socket(httpd.socket, certfile='server.pem', server_side=True)
-print "\n\n\nStarting https server. Press Ctrl-C to abort.\n---------------------------------------------------------"
+print "\n\n\nStarting https server.\nNavigate your browser to " + \
+      REDIRECT_URI + \
+      "\nPress Ctrl-C to abort.\n---------------------------------------------------------"
 httpd.serve_forever()
