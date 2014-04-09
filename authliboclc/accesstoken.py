@@ -32,6 +32,7 @@ import urllib
 import urllib2
 import json
 from refreshtoken import RefreshToken
+import string
 
 AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
 
@@ -208,11 +209,10 @@ class AccessToken(object):
         if user != None:
             self.user = user
             self.options = {'user': self.user}
-        authorization = self.wskey.get_hmac_signature(**{
-            'method': 'POST',
-            'request_url': self.access_token_url,
-            'options': self.options
-        })
+        authorization = self.wskey.get_hmac_signature(
+            method='POST',
+            request_url=self.access_token_url,
+            options=self.options)
         self.request_access_token(authorization, self.access_token_url)
 
     def refresh(self):
@@ -222,20 +222,17 @@ class AccessToken(object):
 
         self.grant_type = 'refresh_token'
         self.access_token_url = self.get_access_token_url()
-        authorization = self.wskey.get_hmac_signature(**{
-            'method': 'POST',
-            'request_url': self.access_token_url
-        })
+        authorization = self.wskey.get_hmac_signature(method='POST', request_url=self.access_token_url)
         self.request_access_token(authorization, self.access_token_url)
 
     def request_access_token(self, authorization, url):
         """ Request an access token. """
-        request = urllib2.Request(**{
-            'url': url,
-            'data': "",
-            'headers': {'Authorization': authorization,
-                        'Accept': 'application/json'}
-        })
+        request = urllib2.Request(
+            url=url,
+            data="",
+            headers={'Authorization': authorization,
+                     'Accept': 'application/json'}
+        )
 
         opener = urllib2.build_opener()
 
@@ -288,20 +285,20 @@ class AccessToken(object):
         principal_idns = responseJSON.get('principalIDNS', None)
 
         if principal_id != None and principal_idns != None:
-            self.user = User(**{
-                'authenticating_institution_id': self.authenticating_institution_id,
-                'principal_id': principal_id,
-                'principal_idns': principal_idns
-            })
+            self.user = User(
+                authenticating_institution_id=self.authenticating_institution_id,
+                principal_id=principal_id,
+                principal_idns=principal_idns
+            )
 
         refresh_token = responseJSON.get('refresh_token', None)
 
         if refresh_token != None:
-            self.refresh_token = RefreshToken(**{
-                'tokenValue': refresh_token,
-                'expires_in': responseJSON.get('refresh_token_expires_in', None),
-                'expires_at': responseJSON.get('refresh_token_expires_at', None)
-            })
+            self.refresh_token = RefreshToken(
+                tokenValue=refresh_token,
+                expires_in=responseJSON.get('refresh_token_expires_in', None),
+                expires_at=responseJSON.get('refresh_token_expires_at', None)
+            )
 
     def parse_error_response(self, httpError):
         self.error_code = httpError.getcode()
@@ -310,23 +307,48 @@ class AccessToken(object):
         return ''
 
     def __str__(self):
-        ret = 'access_token_url:\t\t\t' + str(self.access_token_url).replace('?', '?\n\t\t\t\t').replace('&',
-                                                                                                     '\n\t\t\t\t&') + "\n"
-        ret += 'authenticating_institution_id:\t' + str(self.authenticating_institution_id) + "\n"
-        ret += 'authorization_server:\t\t' + str(self.authorization_server) + "\n"
-        ret += 'code:\t\t\t\t' + str(self.code) + "\n"
-        ret += 'context_institution_id:\t\t' + str(self.context_institution_id) + "\n"
-        ret += 'error_code:\t\t' + str(self.error_code) + "\n"
-        ret += 'error_message:\t\t\t' + str(self.error_message) + "\n"
-        ret += 'expires_at:\t\t\t' + str(self.expires_at) + "\n"
-        ret += 'expires_in:\t\t\t' + str(self.expires_in) + "\n"
-        ret += 'grant_type:\t\t\t' + str(self.grant_type) + "\n"
-        ret += 'options:\t\t\t' + str(self.options) + "\n"
-        ret += 'redirect_uri:\t\t\t' + str(self.redirect_uri) + "\n"
-        ret += 'refresh_token:' + str(self.refresh_token) + "\n"
-        ret += 'scope:\t' + str(self.scope) + "\n"
-        ret += 'type:\t\t\t\t' + str(self.type) + "\n"
-        ret += 'user:' + str(self.user) + "\n"
-        ret += 'wskey:' + str(self.wskey) + "\n"
 
-        return ret
+        return string.Template("""
+access_token_url: $access_token_url
+
+authenticating_institution_id:  $authenticating_institution_id
+authorization_server:           $authorization_server
+code:                           $code
+context_institution_id:         $context_institution_id
+error_code:                     $error_code
+error_message:                  $error_message
+error_url:                      $error_url
+expires_at:                     $expires_at
+expires_in:                     $expires_in
+grant_type:                     $grant_type
+options:                        $options
+redirect_uri:                   $redirect_uri
+refresh_token:
+$refresh_token
+scope:                          $scope
+type:                           $type
+user:
+$user
+wskey:
+$wskey""").substitute({
+            'access_token_url': self.access_token_url.
+                replace('?', '?\n' + ' ' * 18).
+                replace('&', '\n' + ' ' * 18 + '&'),
+            'authenticating_institution_id': self.authenticating_institution_id,
+            'authorization_server': self.authorization_server,
+            'code': self.code,
+            'context_institution_id': self.context_institution_id,
+            'error_code': self.error_code,
+            'error_message': self.error_message,
+            'error_url': self.error_url,
+            'expires_at': self.expires_at,
+            'expires_in': self.expires_in,
+            'grant_type': self.grant_type,
+            'options': self.options,
+            'redirect_uri': self.redirect_uri,
+            'refresh_token': self.refresh_token,
+            'scope': self.scope,
+            'type': self.type,
+            'user': self.user,
+            'wskey': self.wskey
+        })

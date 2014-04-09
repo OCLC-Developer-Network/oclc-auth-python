@@ -77,10 +77,10 @@ class UserTests(unittest.TestCase):
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
-        self.assertEqual(str(self._user), (
-            '\tprincipal_id:\t\t\t8eaa9f92-3951-431c-975a-e5dt26b7d232\n' +
-            '\tprincipal_idns:\t\t\turn:oclc:wms:da\n' +
-            '\tauthenticating_institution_id:\t128807\n')
+        self.assertEqual(str(self._user),
+                         'principal_id:                  8eaa9f92-3951-431c-975a-e5dt26b7d232\n' +
+                         'principal_idns:                urn:oclc:wms:da\n' +
+                         'authenticating_institution_id: 128807\n'
         )
 
 

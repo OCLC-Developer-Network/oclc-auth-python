@@ -23,6 +23,8 @@ principal identifier and principal identifier namespace, along with the authenti
 
 """
 
+import string
+
 
 class InvalidParameter(Exception):
     """Custom exception - invalid parameter was passed to class"""
@@ -64,8 +66,12 @@ class User(object):
         self.principal_idns = principal_idns
 
     def __str__(self):
-        ret = ''
-        ret += '\tprincipal_id:\t\t\t' + str(self.principal_id) + "\n"
-        ret += '\tprincipal_idns:\t\t\t' + str(self.principal_idns) + "\n"
-        ret += '\tauthenticating_institution_id:\t' + str(self.authenticating_institution_id) + "\n"
-        return ret
+
+        return string.Template("""principal_id:                  $principal_id
+principal_idns:                $principal_idns
+authenticating_institution_id: $authenticating_institution_id
+""").substitute({
+            'principal_id': self.principal_id,
+            'principal_idns': self.principal_idns,
+            'authenticating_institution_id': self.authenticating_institution_id,
+        })

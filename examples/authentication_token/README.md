@@ -28,4 +28,5 @@ To use the example:
     Do not be concerned about "security warnings" - click through them. That is expected with the supplied, unsigned
     CACERT in server.pem. In production, you will use your institution's signed CACERT when implementing SSL.
 
-Note that this example writes sessions to a flat file, sessions.p. So it will need read/write access to the authentication_token directory.
+Note that this example writes sessions to a flat file, sessions.p. So it will need read/write access to the
+authentication_token directory. In practice, you would implement sessions using your own database.

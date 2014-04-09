@@ -28,7 +28,6 @@ PORT = 8000
 """Authentication parameters."""
 KEY = '{clientID}'
 SECRET = '{secret}'
-
 AUTHENTICATING_INSTITUTION_ID = '128807'  # default value for Sandbox institution
 CONTEXT_INSTITUTION_ID = '128807'  # default value for Sandbox institution
 SERVICES = ['WorldCatMetadataAPI', 'refresh_token']

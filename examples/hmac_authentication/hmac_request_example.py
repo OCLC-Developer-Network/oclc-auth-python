@@ -19,8 +19,7 @@
 
 # Sample HMAC Hashing for Bibliographic record retrieval
 
-from authliboclc import wskey
-from authliboclc import user
+from authliboclc import wskey, user
 import urllib2
 
 #
@@ -36,32 +35,32 @@ authenticating_institution_id = '{institutionID}'
 
 request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
 
-my_wskey = wskey.Wskey(**{
-    'key': key,
-    'secret': secret,
-    'options': None})
+my_wskey = wskey.Wskey(
+    key=key,
+    secret=secret,
+    options=None)
 
-my_user = user.User(**{
-    'authenticating_institution_id': authenticating_institution_id,
-    'principal_id': principal_id,
-    'principal_idns': principal_idns
-})
+my_user = user.User(
+    authenticating_institution_id=authenticating_institution_id,
+    principal_id=principal_id,
+    principal_idns=principal_idns
+)
 
-authorization_header = my_wskey.get_hmac_signature(**{
-    'method': 'GET',
-    'request_url': request_url,
-    'options': {
+authorization_header = my_wskey.get_hmac_signature(
+    method='GET',
+    request_url=request_url,
+    options={
         'user': my_user,
         'auth_params': None}
-})
+)
 
 print(authorization_header)
 
-my_request = urllib2.Request(**{
-    'url': request_url,
-    'data': None,
-    'headers': {'Authorization': authorization_header}
-})
+my_request = urllib2.Request(
+    url=request_url,
+    data=None,
+    headers={'Authorization': authorization_header}
+)
 
 try:
     xml_result = urllib2.urlopen(my_request).read()
@@ -70,4 +69,4 @@ try:
 except urllib2.HTTPError, e:
     print ('** ' + str(e) + ' **')
     if key == '{clientID}':
-        print('You need to supply valid parameters - see line 28.')
+        print('You need to supply valid parameters - see line 30.')

@@ -38,7 +38,7 @@ class AccessTokenTests(unittest.TestCase):
                          'code': 'unknown'}
 
         self._my_access_token = accesstoken.AccessToken('authorization_code',
-                                                      self._options)
+                                                        self._options)
 
     def testAuthorizationServer(self):
         self.assertEqual('https://authn.sd00.worldcat.org/oauth2',
@@ -71,7 +71,7 @@ class AccessTokenTests(unittest.TestCase):
             'client_credentials'
         ]
         self.assertEqual(grant_types, valid_grant_types, 'Grant types must be authorization_code, refresh_token, '
-                                                       'client_credentials')
+                                                         'client_credentials')
 
     """ Check that attempts to create Access Tokens work, and incorrect parameters raise exceptions. """
 
@@ -204,7 +204,8 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(sample_access_token.error_code, 'trouble')
         self.assertEqual(sample_access_token.context_institution_id, '128807')
         self.assertEqual(user.User, type(sample_access_token.user))
-        self.assertEqual(expected_user.authenticating_institution_id, sample_access_token.user.authenticating_institution_id)
+        self.assertEqual(expected_user.authenticating_institution_id,
+                         sample_access_token.user.authenticating_institution_id)
         self.assertEqual(expected_user.principal_id, sample_access_token.user.principal_id)
         self.assertEqual(expected_user.principal_idns, sample_access_token.user.principal_idns)
         self.assertEqual(refreshtoken.RefreshToken, type(sample_access_token.refresh_token))
@@ -215,31 +216,55 @@ class AccessTokenTests(unittest.TestCase):
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
-        self.assertEqual(str(self._my_access_token), (
-            'access_token_url:\t\t\thttps://authn.sd00.worldcat.org/oauth2/accessToken?\n' +
-            '\t\t\t\tgrant_type=authorization_code\n' +
-            '\t\t\t\t&code=unknown\n' +
-            '\t\t\t\t&authenticatingInstitutionId=128807\n' +
-            '\t\t\t\t&contextInstitutionId=128808\n' +
-            '\t\t\t\t&redirect_uri=ncip%3A%2F%2Ftestapp\n' +
-            'authenticating_institution_id:\t128807\n' +
-            'authorization_server:\t\thttps://authn.sd00.worldcat.org/oauth2\n' +
-            'code:\t\t\t\tunknown\n' +
-            'context_institution_id:\t\t128808\n' +
-            'error_code:\t\tNone\n' +
-            'error_message:\t\t\tNone\n' +
-            'expires_at:\t\t\tNone\n' +
-            'expires_in:\t\t\tNone\n' +
-            'grant_type:\t\t\tauthorization_code\n' +
-            'options:\t\t\tNone\n' +
-            'redirect_uri:\t\t\tncip://testapp\n' +
-            'refresh_token:\trefresh_token:\trt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
-            '\t\texpires_in:\t1199\n' +
-            '\t\texpires_at:\t2014-03-13 15:44:59Z\n' +
-            '\n' + 'scope:\t[\'WMS_NCIP\', \'WMS_ACQ\']\n' +
-            'type:\t\t\t\tNone\n' +
-            'user:None\n' +
-            'wskey:None\n')
+        """Create a new access token which hasn't been authenticated yet."""
+        sample_access_token = accesstoken.AccessToken(
+            grant_type='authorization_code',
+            options={'scope': ['WMS_NCIP', 'WMS_ACQ'],
+                     'authenticating_institution_id': '128807',
+                     'context_institution_id': '128808',
+                     'redirect_uri': 'https://localhost:8000/auth/',
+                     'code': 'unknown'
+            }
+        )
+
+        """Assume authentication has occured and these parameters are now filled in."""
+        sample_access_token.expires_at = '2014-04-08 13:38:29Z'
+        sample_access_token.expires_in = 1198
+        sample_access_token.access_token_string = 'tk_TBHrsDbSrWW1oS7d3gZr7NJb7PokyOFlf0pr'
+        sample_access_token.type = 'bearer'
+        sample_access_token.error_code = 404
+        sample_access_token.error_message = 'No reply at all.'
+        sample_access_token.error_url = 'http://www.noreply.oclc.org/auth/'
+
+        self.assertEqual(str(sample_access_token), (
+            "\n" +
+            "access_token_url: https://authn.sd00.worldcat.org/oauth2/accessToken?\n" +
+            "                  grant_type=authorization_code\n" +
+            "                  &code=unknown\n" +
+            "                  &authenticatingInstitutionId=128807\n" +
+            "                  &contextInstitutionId=128808\n" +
+            "                  &redirect_uri=https%3A%2F%2Flocalhost%3A8000%2Fauth%2F\n" +
+            "\n" +
+            "authenticating_institution_id:  128807\n" +
+            "authorization_server:           https://authn.sd00.worldcat.org/oauth2\n" +
+            "code:                           unknown\n" +
+            "context_institution_id:         128808\n" +
+            "error_code:                     404\n" +
+            "error_message:                  No reply at all.\n" +
+            "error_url:                      http://www.noreply.oclc.org/auth/\n" +
+            "expires_at:                     2014-04-08 13:38:29Z\n" +
+            "expires_in:                     1198\n" +
+            "grant_type:                     authorization_code\n" +
+            "options:                        None\n" +
+            "redirect_uri:                   https://localhost:8000/auth/\n" +
+            "refresh_token:\n" +
+            "None\n" +
+            "scope:                          ['WMS_NCIP', 'WMS_ACQ']\n" +
+            "type:                           bearer\n" +
+            "user:\n" +
+            "None\n" +
+            "wskey:\n" +
+            "None")
         )
 
 

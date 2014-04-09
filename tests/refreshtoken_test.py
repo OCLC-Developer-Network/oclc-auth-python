@@ -80,10 +80,11 @@ class RefreshTokenTests(unittest.TestCase):
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
-        self.assertEqual(str(self._myRefreshToken), (
-            '\trefresh_token:\trt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
-            '\t\texpires_in:\t1199\n' +
-            '\t\texpires_at:\t2014-03-13 15:44:59Z\n'))
+        self.assertEqual(str(self._myRefreshToken),
+                         'refresh_token: rt_25fXauhJC09E4kwFxcf4TREkTnaRYWHgJA0W\n' +
+                         'expires_in:    1199\n' +
+                         'expires_at:    2014-03-13 15:44:59Z\n'
+        )
 
 
 def main():

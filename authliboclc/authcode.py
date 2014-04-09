@@ -25,6 +25,7 @@ and perform hashing.
 
 from urlparse import urlparse
 import urllib
+import string
 
 AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
 
@@ -126,12 +127,19 @@ class AuthCode(object):
         )
 
     def __str__(self):
-        ret = ''
-        ret += '\tauthorization_server: ' + str(self.authorization_server) + "\n"
-        ret += '\tclient_id: ' + str(self.client_id) + "\n"
-        ret += '\tauthenticating_institution_id: ' + str(self.authenticating_institution_id) + "\n"
-        ret += '\tcontext_institution_id: ' + str(self.context_institution_id) + "\n"
-        ret += '\tredirect_uri: ' + str(self.redirect_uri) + "\n"
-        ret += '\tscopes: ' + str(self.scopes) + "\n"
 
-        return ret
+        return string.Template("""authorization_server:          $authorization_server
+client_id:                     $client_id
+authenticating_institution_id: $authenticating_institution_id
+context_institution_id:        $context_institution_id
+redirect_uri:                  $redirect_uri
+scopes:                        $scopes
+""").substitute({
+            'authorization_server': self.authorization_server,
+            'client_id': self.client_id,
+            'authenticating_institution_id': self.authenticating_institution_id,
+            'context_institution_id': self.context_institution_id,
+            'redirect_uri': self.redirect_uri,
+            'scopes': self.scopes}
+        )
+

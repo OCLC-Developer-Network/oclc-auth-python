@@ -34,6 +34,7 @@ import hashlib
 import base64
 import collections
 import copy
+import string
 
 SIGNATURE_URL = 'https://www.oclc.org/wskey'
 
@@ -137,17 +138,18 @@ class Wskey(object):
         if context_institution_id == None:
             raise InvalidParameter('You must pass a context institution ID')
 
-        authCode = AuthCode(**{
-            'client_id': self.key,
-            'authenticating_institution_id': authenticating_institution_id,
-            'context_institution_id': context_institution_id,
-            'redirect_uri': self.redirect_uri,
-            'scopes': self.services
-        })
+        authCode = AuthCode(
+            client_id=self.key,
+            authenticating_institution_id=authenticating_institution_id,
+            context_institution_id=context_institution_id,
+            redirect_uri=self.redirect_uri,
+            scopes=self.services
+        )
 
         return authCode.get_login_url()
 
-    def get_access_token_with_auth_code(self, code=None, authenticating_institution_id=None, context_institution_id=None):
+    def get_access_token_with_auth_code(self, code=None, authenticating_institution_id=None,
+                                        context_institution_id=None):
         """Retrieves an Access Token using an Authentication Code
 
         Args:
@@ -166,25 +168,22 @@ class Wskey(object):
         if context_institution_id == None or context_institution_id == '':
             raise InvalidParameter('You must pass a context_institution_id')
 
-        accessToken = AccessToken(**{
-            'grant_type': 'authorization_code',
-            'options': {
+        accessToken = AccessToken(
+            grant_type='authorization_code',
+            options={
                 'code': code,
                 'authenticating_institution_id': authenticating_institution_id,
                 'context_institution_id': context_institution_id,
                 'redirect_uri': self.redirect_uri
             }
-        })
+        )
 
-        accessToken.create(**{
-            'wskey': self,
-            'user': None
-        })
+        accessToken.create(wskey=self, user=None)
 
         return accessToken
 
     def get_access_token_with_client_credentials(self, authenticating_institution_id=None, context_institution_id=None,
-                                            user=None):
+                                                 user=None):
         """Retrieves an Access Token using a Client Credentials Grant
 
         Args:
@@ -203,19 +202,16 @@ class Wskey(object):
         if self.services == None or self.services == [] or len(self.services) == 0 or self.services == ['']:
             raise InvalidParameter('You must set at least on service on the Wskey')
 
-        accessToken = AccessToken(**{
-            'grant_type': 'client_credentials',
-            'options': {
+        accessToken = AccessToken(
+            grant_type='client_credentials',
+            options={
                 'authenticating_institution_id': authenticating_institution_id,
                 'context_institution_id': context_institution_id,
                 'scope': self.services
             }
-        })
+        )
 
-        accessToken.create(**{
-            'wskey': self,
-            'user': user
-        })
+        accessToken.create(wskey=self, user=user)
 
         return accessToken
 
@@ -253,20 +249,21 @@ class Wskey(object):
         if nonce == None or nonce == '':
             nonce = str(hex(int(math.floor(random.random() * 4026531839 + 268435456))))
 
-        signature = self.sign_request(**{
-            'method': method,
-            'request_url': request_url,
-            'timestamp': timestamp,
-            'nonce': nonce})
+        signature = self.sign_request(
+            method=method,
+            request_url=request_url,
+            timestamp=timestamp,
+            nonce=nonce
+        )
 
         q = '"'
         qc = '",'
 
         authorization_header = ("http://www.worldcat.org/wskey/v2/hmac/v1 " +
-                               "clientID=" + q + self.key + qc +
-                               "timestamp=" + q + timestamp + qc +
-                               "nonce=" + q + nonce + qc +
-                               "signature=" + q + signature)
+                                "clientID=" + q + self.key + qc +
+                                "timestamp=" + q + timestamp + qc +
+                                "nonce=" + q + nonce + qc +
+                                "signature=" + q + signature)
 
         if self.user != None or self.auth_params != None:
             authorization_header += (qc + self.add_auth_params(self.user, self.auth_params))
@@ -288,12 +285,12 @@ class Wskey(object):
         Returns:
             A base 64 encoded SHA 256 HMAC hash
         """
-        normalized_request = self.normalize_request(**{
-            'method': method,
-            'request_url': request_url,
-            'timestamp': timestamp,
-            'nonce': nonce
-        })
+        normalized_request = self.normalize_request(
+            method=method,
+            request_url=request_url,
+            timestamp=timestamp,
+            nonce=nonce
+        )
 
         digest = hmac.new(self.secret, msg=normalized_request, digestmod=hashlib.sha256).digest()
         return str(base64.b64encode(digest).decode())
@@ -334,13 +331,13 @@ class Wskey(object):
 
         """The base normalized request."""
         normalized_request = (self.key + '\n' +
-                             timestamp + '\n' +
-                             nonce + '\n' +
-                             body_hash + '\n' +
-                             method + '\n' +
-                             host + '\n' +
-                             port + '\n' +
-                             path + '\n')
+                              timestamp + '\n' +
+                              nonce + '\n' +
+                              body_hash + '\n' +
+                              method + '\n' +
+                              host + '\n' +
+                              port + '\n' +
+                              path + '\n')
 
         """Add the request parameters to the normalized request."""
         parameters = {}
@@ -395,14 +392,24 @@ class Wskey(object):
         return authValuePairs
 
     def __str__(self):
-        ret = ''
-        ret += '\tkey:\t\t' + str(self.key) + "\n"
-        ret += '\tsecret:\t\t' + str(self.secret) + "\n"
-        ret += '\tredirect_uri:\t' + str(self.redirect_uri) + "\n"
-        ret += '\tservices:\t' + str(self.services) + "\n"
-        ret += '\tdebug_time_stamp:\t' + str(self.debug_time_stamp) + "\n"
-        ret += '\tdebug_nonce:\t' + str(self.debug_nonce) + "\n"
-        ret += '\tbody_hash:\t' + str(self.body_hash) + "\n"
-        ret += '\tauth_params:\t' + str(self.auth_params) + "\n"
-        ret += '\tuser:\t\t' + str(self.user) + "\n"
-        return ret
+
+        return string.Template("""key:              $key
+secret:           $secret
+redirect_uri:     $redirect_uri
+services:         $services
+debug_time_stamp: $debug_time_stamp
+debug_nonce:      $debug_nonce
+body_hash:        $body_hash
+auth_params:      $auth_params
+user:
+$user""").substitute({
+            'key': self.key,
+            'secret': self.secret,
+            'redirect_uri': self.redirect_uri,
+            'services': self.services,
+            'debug_time_stamp': self.debug_time_stamp,
+            'debug_nonce': self.debug_nonce,
+            'body_hash': self.body_hash,
+            'auth_params': self.auth_params,
+            'user': self.user
+        })

@@ -26,6 +26,7 @@
 
 import time
 from time import mktime
+import string
 
 
 class InvalidParameter(Exception):
@@ -77,9 +78,12 @@ class RefreshToken(object):
         return status
 
     def __str__(self):
-        ret = ''
-        ret += '\trefresh_token:\t' + str(self.refresh_token) + "\n"
-        ret += '\t\texpires_in:\t' + str(self.expires_in) + "\n"
-        ret += '\t\texpires_at:\t' + str(self.expires_at) + "\n"
 
-        return ret
+        return string.Template("""refresh_token: $refresh_token
+expires_in:    $expires_in
+expires_at:    $expires_at
+""").substitute({
+            'refresh_token': self.refresh_token,
+            'expires_in': self.expires_in,
+            'expires_at': self.expires_at
+        })

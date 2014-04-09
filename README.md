@@ -167,16 +167,17 @@ requestUrl = 'https://worldcat.org/bib/data/823520553?classificationScheme=Libra
 Construct the <strong>wskey</strong> and <strong>user</strong> objects. 
 
 <pre>
-myWskey = wskey.Wskey(**{
-    'key': key,
-    'secret': secret,
-    'options': None})
+myWskey = wskey.Wskey(
+    key=key,
+    secret=secret,
+    options=None
+)
 
-myUser = user.User(**{
-    'authenticatingInstitutionID': authenticatingInstitutionID,
-    'principalID': principalID,
-    'principalIDNS': principalIDNS
-})
+myUser = user.User(
+    authenticatingInstitutionID=authenticatingInstitutionID,
+    principalID=principalID,
+    principalIDNS=principalIDNS
+)
 </pre>
 
 Note that the options parameter is for access token use and you do not need to add them for this example. For details, see the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/blob/master/authliboclc/wskey.py">wskey.py</a> file in the <a href="https://github.com/OCLC-Developer-Network/oclc-auth-python/tree/master/authliboclc">authliboclc</a> library folder.
@@ -184,24 +185,24 @@ Note that the options parameter is for access token use and you do not need to a
 Calculate the Authorization header:
 
 <pre>
-authorizationHeader = myWskey.getHMACSignature(**{
-    'method': 'GET',
-    'requestUrl': requestUrl,
-    'options': {
+authorizationHeader = myWskey.getHMACSignature(
+    method='GET',
+    requestUrl=requestUrl,
+    options={
         'user': myUser,
         'authParams': None}
-})
+)
 </pre>
 
 With our request URL and Authorization header prepared, we are ready to use Python's <strong>urllib2</strong>
 library to make the GET request.
 
 <pre>
-myRequest = urllib2.Request(**{
-    'url': requestUrl,
-    'data': None,
-    'headers': {'Authorization': authorizationHeader}
-})
+myRequest = urllib2.Request(
+    url=requestUrl,
+    data=None,
+    headers={'Authorization': authorizationHeader}
+)
 
 try:
     xmlresult = urllib2.urlopen(myRequest).read()
@@ -245,22 +246,22 @@ exchanged by the client to obtain Access Tokens:
 
 1. Create a wskey object:
    <pre>
-   myWskey = wskey.Wskey(**{
-       'key': key,
-       'secret': secret,
-       'options': {
+   myWskey = wskey.Wskey(
+       key=key,
+       secret=secret,
+       options={
            'services': ['service1' {,'service2',...} ],
            'redirectUri': redirectUri
        }
-   })
+   )
    </pre>
 
 1. Generate a login URL and redirect to it:
    <pre>
-   loginUrl = myWskey.getLoginUrl(**{
-        'authenticatingInstitutionId': '{your institutionId}',
-        'contextInstitutionId': '{your institutionId}'
-    })
+   loginUrl = myWskey.getLoginUrl(
+        authenticatingInstitutionId='{your institutionId}',
+        contextInstitutionId='{your institutionId}'
+    )
     response['Location'] = loginUrl
     response.status_code = '303'
     </pre>
@@ -276,11 +277,11 @@ order to read or write data associated with a specific institution during a spec
 
 This library function takes the <strong>code</strong> and makes the Access Token request, returning the Access Token object.
 
-    accessToken = myWskey.getAccessTokenWithAuthCode(**{
-        'code': code,
-        'authenticatingInstitutionId': '128807',
-        'contextInstitutionId': '128807'
-    })
+    accessToken = myWskey.getAccessTokenWithAuthCode(
+        code=code,
+        authenticatingInstitutionId='128807',
+        contextInstitutionId='128807'
+    )
 
 The access token object has these parameters:
 
@@ -319,23 +320,23 @@ requestUrl = (
 Now we construct an authorization header using our Access Token's user parameter:
 
 <pre>
-authorizationHeader = wskey.getHMACSignature(**{
-    'method': 'GET',
-    'requestUrl': requestUrl,
-    'options': {
+authorizationHeader = wskey.getHMACSignature(
+    method='GET',
+    requestUrl=requestUrl,
+    options={
         'user': accessToken.user
     }
-})
+)
 </pre>
 
 Finally, we make the request:
 
 <pre>
-myRequest = urllib2.Request(**{
-    'url': requestUrl,
-    'data': None,
-    'headers': {'Authorization': authorizationHeader}
-})
+myRequest = urllib2.Request(
+    url=requestUrl,
+    data=None,
+    headers={'Authorization': authorizationHeader}
+)
 
 try:
     xmlResult = urllib2.urlopen(myRequest).read()

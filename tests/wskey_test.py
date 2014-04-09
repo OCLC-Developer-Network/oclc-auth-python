@@ -161,9 +161,9 @@ class WskeyTests(unittest.TestCase):
         AuthenticationHeader = self._my_wskey.get_hmac_signature(**{
             'method': 'GET',
             'request_url': ('https://worldcat.org/bib/data/1039085' +
-                           '?inst=128807' +
-                           '&classificationScheme=LibraryOfCongress' +
-                           '&holdingLibraryCode=MAIN'),
+                            '?inst=128807' +
+                            '&classificationScheme=LibraryOfCongress' +
+                            '&holdingLibraryCode=MAIN'),
             'options': {
                 'user': user.User(**{
                     'principal_id': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
@@ -192,9 +192,9 @@ class WskeyTests(unittest.TestCase):
         signature = self._my_wskey.sign_request(**{
             'method': 'GET',
             'request_url': ('https://worldcat.org/bib/data/1039085' +
-                           '?inst=128807' +
-                           '&classificationScheme=LibraryOfCongress' +
-                           '&holdingLibraryCode=MAIN'),
+                            '?inst=128807' +
+                            '&classificationScheme=LibraryOfCongress' +
+                            '&holdingLibraryCode=MAIN'),
             'timestamp': '1392239490',
             'nonce': '0x16577027'
         })
@@ -209,9 +209,9 @@ class WskeyTests(unittest.TestCase):
         normalized_request = self._my_wskey.normalize_request(**{
             'method': 'GET',
             'request_url': ('https://worldcat.org/bib/data/1039085' +
-                           '?inst=128807' +
-                           '&classificationScheme=LibraryOfCongress' +
-                           '&holdingLibraryCode=MAIN'),
+                            '?inst=128807' +
+                            '&classificationScheme=LibraryOfCongress' +
+                            '&holdingLibraryCode=MAIN'),
             'timestamp': '1392236038',
             'nonce': '0x66a29eea'})
 
@@ -261,17 +261,17 @@ class WskeyTests(unittest.TestCase):
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
-        self.assertEqual(str(self._my_wskey), (
-            "\tkey:\t\tCancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM\n" +
-            "\tsecret:\t\tYeZfIJdGYUeatxQOjekRZw==\n" +
-            "\tredirect_uri:\thttp://www.oclc.org/test\n" +
-            "\tservices:\t['WMS_NCIP', 'WMS_ACQ']\n" +
-            "\tdebug_time_stamp:\tNone\n" +
-            "\tdebug_nonce:\tNone\n" +
-            "\tbody_hash:\tNone\n" +
-            "\tauth_params:\tNone\n" +
-            "\tuser:\t\tNone\n")
-        )
+        self.assertEqual(str(self._my_wskey),
+                         "key:              CancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM\n" +
+                         "secret:           YeZfIJdGYUeatxQOjekRZw==\n" +
+                         "redirect_uri:     http://www.oclc.org/test\n" +
+                         "services:         ['WMS_NCIP', 'WMS_ACQ']\n" +
+                         "debug_time_stamp: None\n" +
+                         "debug_nonce:      None\n" +
+                         "body_hash:        None\n" +
+                         "auth_params:      None\n" +
+                         "user:\n" +
+                         "None")
 
 
 def main():

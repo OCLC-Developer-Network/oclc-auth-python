@@ -68,14 +68,14 @@ def index(request):
         redirect_uri = 'http://' + request.get_host() + request.path  # http://localhost:8000/auth/
 
     """Populate the WSKey object's parameters"""
-    my_wskey = wskey.Wskey(**{
-        'key': key,
-        'secret': secret,
-        'options': {
+    my_wskey = wskey.Wskey(
+        key=key,
+        secret=secret,
+        options={
             'services': services,
             'redirect_uri': redirect_uri
         }
-    })
+    )
 
     access_token = None
 
@@ -100,50 +100,40 @@ def index(request):
 
     elif access_token == None and code == None:
         """Initiate user authentication by executing a redirect to the IDM sign in page."""
-        login_url = my_wskey.get_login_url(**{
-            'authenticating_institution_id': authenticating_institution_id,
-            'context_institution_id': context_institution_id
-        })
+        login_url = my_wskey.get_login_url(
+            authenticating_institution_id=authenticating_institution_id,
+            context_institution_id=context_institution_id
+        )
         response['Location'] = login_url
         response.status_code = '303'
 
     elif access_token == None and code != None:
         """Request an access token using the user authentication code returned after the user authenticated"""
         """Then request a bibliographic record"""
-        access_token = my_wskey.get_access_token_with_auth_code(**{
-            'code': code,
-            'authenticating_institution_id': authenticating_institution_id,
-            'context_institution_id': context_institution_id
-        })
+        access_token = my_wskey.get_access_token_with_auth_code(
+            code=code,
+            authenticating_institution_id=authenticating_institution_id,
+            context_institution_id=context_institution_id
+        )
 
         if access_token.error_code == None:
             request.session['access_token'] = pickle.dumps(access_token)
             response.write('<p><strong>Access Token</strong> NOT FOUND in this session, so I requested a new one.</p>')
 
-        response.write(format_access_token(**{
-            'access_token': access_token
-        }))
+        response.write(format_access_token(access_token=access_token))
 
         if access_token.error_code == None:
-            response.write(get_bib_record(**{
-                'access_token': access_token,
-                'wskey': my_wskey
-            }))
+            response.write(get_bib_record(access_token=access_token, wskey=my_wskey))
 
     elif access_token != None:
         """We already have an Access Token, so display the token and request a Bibliographic Record"""
         if access_token.error_code == None:
             response.write('<p><strong>Access Token</strong> found in this session, and it is still valid.</p>')
 
-        response.write(format_access_token(**{
-            'access_token': access_token
-        }))
+        response.write(format_access_token(access_token=access_token))
 
         if access_token.error_code == None:
-            response.write(get_bib_record(**{
-                'access_token': access_token,
-                'wskey': my_wskey
-            }))
+            response.write(get_bib_record(access_token=access_token, wskey=my_wskey))
 
     return response
 
@@ -175,12 +165,13 @@ def format_access_token(access_token):
 
         if access_token.refresh_token != None:
             ret += '<tr><td>refresh_token</td><td>' + str(access_token.refresh_token.refresh_token) + '</td></tr>'
-            ret += '<tr><td>refresh_token_expires_at</td><td>' + str(access_token.refresh_token.expires_at) + '</td></tr>'
-            ret += '<tr><td>refresh_token_expires_in</td><td>' + str(access_token.refresh_token.expires_in) + '</td></tr>'
+            ret += '<tr><td>refresh_token_expires_at</td><td>' + str(
+                access_token.refresh_token.expires_at) + '</td></tr>'
+            ret += '<tr><td>refresh_token_expires_in</td><td>' + str(
+                access_token.refresh_token.expires_in) + '</td></tr>'
 
     ret += '</table>'
     return ret
-
 
 
 def get_bib_record(access_token, wskey):
@@ -191,19 +182,19 @@ def get_bib_record(access_token, wskey):
         '&holdingLibraryCode=MAIN'
     )
 
-    authorization_header = wskey.get_hmac_signature(**{
-        'method': 'GET',
-        'request_url': request_url,
-        'options': {
+    authorization_header = wskey.get_hmac_signature(
+        method='GET',
+        request_url=request_url,
+        options={
             'user': access_token.user
         }
-    })
+    )
 
-    my_request = urllib2.Request(**{
-        'url': request_url,
-        'data': None,
-        'headers': {'Authorization': authorization_header}
-    })
+    my_request = urllib2.Request(
+        url=request_url,
+        data=None,
+        headers={'Authorization': authorization_header}
+    )
 
     try:
         xml_result = urllib2.urlopen(my_request).read()

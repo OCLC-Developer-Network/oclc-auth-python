@@ -130,13 +130,13 @@ class AuthCodeTests(unittest.TestCase):
     """Test that the string representation of the class is complete."""
 
     def testStringRepresenationOfClass(self):
-        self.assertEqual(str(self._authCode), (
-            '\tauthorization_server: https://authn.sd00.worldcat.org/oauth2\n' +
-            '\tclient_id: 1234ABCD\n' +
-            '\tauthenticating_institution_id: 128807\n' +
-            '\tcontext_institution_id: 128808\n' +
-            '\tredirect_uri: http://www.oclc.org/test\n' +
-            '\tscopes: [\'WMS_NCIP\', \'WMS_ACQ\']\n')
+        self.assertEqual(str(self._authCode),
+                         "authorization_server:          https://authn.sd00.worldcat.org/oauth2\n" +
+                         "client_id:                     1234ABCD\n" +
+                         "authenticating_institution_id: 128807\n" +
+                         "context_institution_id:        128808\n" +
+                         "redirect_uri:                  http://www.oclc.org/test\n" +
+                         "scopes:                        ['WMS_NCIP', 'WMS_ACQ']\n"
         )
 
 
