@@ -33,7 +33,7 @@ principal_id = '{principalID}'
 principal_idns = '{principalIDNS}'
 authenticating_institution_id = '{institutionID}'
 
-request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
+request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress'
 
 my_wskey = wskey.Wskey(
     key=key,
