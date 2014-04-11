@@ -20,7 +20,21 @@
 # Sample HMAC Hashing for Bibliographic record retrieval
 
 from authliboclc import wskey, user
-import urllib2
+import httplib, urllib2
+from urllib2 import URLError
+
+""" Helper class used to display the result headers """
+class MyHTTPSConnection(httplib.HTTPSConnection):
+    def send(self, s):
+        print s
+        httplib.HTTPSConnection.send(self, s)
+
+""" Helper class used to display the result headers """
+class MyHTTPSHandler(urllib2.HTTPSHandler):
+    def https_open(self, req):
+        request = self.do_open(MyHTTPSConnection, req)
+        print request.info()
+        return request
 
 #
 # You must supply these parameters to authenticate
@@ -54,19 +68,19 @@ authorization_header = my_wskey.get_hmac_signature(
         'auth_params': None}
 )
 
-print(authorization_header)
+""" We create an opener that accesses our helper classes, so we can display the headers that are returned."""
+opener = urllib2.build_opener(MyHTTPSHandler)
+opener.addheaders = [('Authorization', authorization_header)]
 
-my_request = urllib2.Request(
-    url=request_url,
-    data=None,
-    headers={'Authorization': authorization_header}
-)
+print ""
 
 try:
-    xml_result = urllib2.urlopen(my_request).read()
-    print(xml_result)
+    response = opener.open(request_url)
+    response_body = response.read()
+    print response_body
 
-except urllib2.HTTPError, e:
-    print ('** ' + str(e) + ' **')
+except URLError as e:
+    response_body = e.read()
+    print response_body
     if key == '{clientID}':
-        print('You need to supply valid parameters - see line 30.')
+        print('\n** Note: You need to supply valid parameters - see line 30. **\n')
