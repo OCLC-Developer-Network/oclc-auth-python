@@ -83,4 +83,4 @@ except URLError as e:
     response_body = e.read()
     print response_body
     if key == '{clientID}':
-        print('\n** Note: You need to supply valid parameters - see line 30. **\n')
+        print('\n** Note: Edit the script and supply valid authentication parameters. **\n')
