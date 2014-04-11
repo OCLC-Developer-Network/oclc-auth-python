@@ -341,7 +341,7 @@ class Wskey(object):
 
         """Add the request parameters to the normalized request."""
         parameters = {}
-        if parsed_request_url.query != None:
+        if parsed_request_url.query != None and parsed_request_url.query != '':
             for param in parsed_request_url.query.split('&'):
                 key = (param.split('='))[0]
                 value = (param.split('='))[1]

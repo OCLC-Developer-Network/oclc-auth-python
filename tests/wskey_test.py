@@ -17,9 +17,7 @@
 # to run this test from the command line: python -m tests.wskey_test
 
 import unittest
-from authliboclc import wskey
-from authliboclc import authcode
-from authliboclc import user
+from authliboclc import wskey, user
 
 
 class WskeyTests(unittest.TestCase):
@@ -181,10 +179,10 @@ class WskeyTests(unittest.TestCase):
                     'password="buffet",' +
                     'principalID="8eaa9f92-3951-431c-975a-e5dt26b7d232",' +
                     'principalIDNS="urn:oclc:wms:ad",' +
-                    'userid="tasty"')
+                    'userid="tasty"'
+        )
 
         self.assertEquals(AuthenticationHeader, expected)
-
 
     """ Verify the correctness of the hashing algorithm. """
 
@@ -226,6 +224,26 @@ class WskeyTests(unittest.TestCase):
                     'classificationScheme=LibraryOfCongress\n' +
                     'holdingLibraryCode=MAIN\n' +
                     'inst=128807\n')
+
+        self.assertEqual(normalized_request, expected)
+
+    """ Verify that a normalized request is produced correctly if there are no query parameters """
+
+    def testNormalizedRequestWithNoQueryParameters(self):
+        normalized_request = self._my_wskey.normalize_request(**{
+            'method': 'GET',
+            'request_url': 'https://worldcat.org/bib/data/1039085',
+            'timestamp': '1392236038',
+            'nonce': '0x66a29eea'})
+
+        expected = ('CancdeDMjFO9vnzkDrB6WJg1UnyTnkn8lLupLKygr0U1KJLiaAittuVjGRywCDdrsxahv2sbjgKq6hLM\n' +
+                    '1392236038\n' +
+                    '0x66a29eea\n' +
+                    '\n' +
+                    'GET\n' +
+                    'www.oclc.org\n' +
+                    '443\n' +
+                    '/wskey\n')
 
         self.assertEqual(normalized_request, expected)
 
