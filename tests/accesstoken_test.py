@@ -87,54 +87,63 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(self._my_access_token.code, 'unknown')
 
         with self.assertRaises(accesstoken.InvalidGrantType):
-            accesstoken.AccessToken(self._authorization_server)
+            accesstoken.AccessToken(authorization_server=self._authorization_server)
 
         # Tests to make sure there are no missing parameters for authorization_code
         with self.assertRaises(accesstoken.NoOptionsPassed):
-            accesstoken.AccessToken(self._authorization_server, 'authorization_code', {})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='authorization_code',
+                                    options={})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'authorization_code',
-                                    {'authenticating_institution_id': '', 'context_institution_id': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='authorization_code',
+                                    options={'authenticating_institution_id': '', 'context_institution_id': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'authorization_code',
-                                    {'code': '', 'context_institution_id': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='authorization_code',
+                                    options={'code': '', 'context_institution_id': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'authorization_code',
-                                    {'code': '', 'authenticating_institution_id': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='authorization_code',
+                                    options={'code': '', 'authenticating_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for client_credentials
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'client_credentials',
-                                    {'refresh_token': '', 'context_institution_id': '', 'scope': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='client_credentials',
+                                    options={'refresh_token': '',
+                                             'context_institution_id': '',
+                                             'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'refresh_token',
-                                    {'client_credentials': '', 'authenticating_institution_id': '', 'scope': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='refresh_token',
+                                    options={'client_credentials': '',
+                                             'authenticating_institution_id': '',
+                                             'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'client_credentials',
-                                    {'refresh_token': '', 'authenticating_institution_id': '',
-                                     'context_institution_id': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='client_credentials',
+                                    options={'refresh_token': '',
+                                             'authenticating_institution_id': '',
+                                             'context_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for refresh_token
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'refresh_token',
-                                    {'authenticating_institution_id': '', 'context_institution_id': '', 'scope': ''})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='refresh_token',
+                                    options={'authenticating_institution_id': '',
+                                             'context_institution_id': '',
+                                             'scope': ''})
 
         # Test that scope must be a list of scopes, not a string
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken(self._authorization_server,
-                                    'authorization_code',
-                                    {'code': '',
-                                     'redirect_uri': '',
-                                     'authenticating_institution_id': '',
-                                     'context_institution_id': '',
-                                     'scope': 'WMS_ACQ'})
+            accesstoken.AccessToken(authorization_server=self._authorization_server,
+                                    grant_type='authorization_code',
+                                    options={'code': '',
+                                             'redirect_uri': '',
+                                             'authenticating_institution_id': '',
+                                             'context_institution_id': '',
+                                             'scope': 'WMS_ACQ'})
 
     """ Make sure an expired token is calculated properly. """
 
@@ -207,17 +216,17 @@ class AccessTokenTests(unittest.TestCase):
             '}'
 
         )
-        expected_user = user.User(**{
-            'authenticating_institution_id': '128807',
-            'principal_id': '2334dd24-b27e-49bd-8fea-7cc8de670f8d',
-            'principal_idns': 'urn:oclc:platform:128807'
-        })
+        expected_user = user.User(
+            authenticating_institution_id='128807',
+            principal_id='2334dd24-b27e-49bd-8fea-7cc8de670f8d',
+            principal_idns='urn:oclc:platform:128807'
+        )
 
-        expected_refresh_token = refreshtoken.RefreshToken(**{
-            'tokenValue': 'rt_25fXauhJC09E5kwFxcf4TRXkTnaRYWHgJA0W',
-            'expires_in': 1900,
-            'expires_at': '2014-03-13 15:44:59Z'
-        })
+        expected_refresh_token = refreshtoken.RefreshToken(
+            tokenValue='rt_25fXauhJC09E5kwFxcf4TRXkTnaRYWHgJA0W',
+            expires_in=1900,
+            expires_at='2014-03-13 15:44:59Z'
+        )
 
         self.assertEqual(sample_access_token.access_token_string, 'tk_25fXauhJC09E5kwFxcf4TRXkTnaRYWHgJA0W')
         self.assertEqual(sample_access_token.type, 'bearer')
