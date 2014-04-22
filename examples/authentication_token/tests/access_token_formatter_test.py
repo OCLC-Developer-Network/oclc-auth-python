@@ -26,6 +26,7 @@ class AccessTokenFormatterTests(unittest.TestCase):
 
         """Create a new access token which hasn't been authenticated yet."""
         self._access_token = accesstoken.AccessToken(
+            authorization_server='https://authn.sd00.worldcat.org/oauth2',
             grant_type='authorization_code',
             options={'scope': ['WMS_NCIP', 'WMS_ACQ'],
                      'authenticating_institution_id': '128807',

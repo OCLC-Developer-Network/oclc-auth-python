@@ -22,11 +22,11 @@ from authliboclc import user
 
 class UserTests(unittest.TestCase):
     def setUp(self):
-        self._user = user.User(**{
-            'principal_id': '8eaa9f92-3951-431c-975a-e5dt26b7d232',
-            'principal_idns': 'urn:oclc:wms:da',
-            'authenticating_institution_id': '128807'
-        })
+        self._user = user.User(
+            principal_id= '8eaa9f92-3951-431c-975a-e5dt26b7d232',
+            principal_idns= 'urn:oclc:wms:da',
+            authenticating_institution_id= '128807'
+        )
 
     """ Test that the creation of the user object incorrect parameters raise exceptions."""
 

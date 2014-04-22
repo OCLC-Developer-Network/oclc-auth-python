@@ -37,13 +37,16 @@ class AccessTokenTests(unittest.TestCase):
                          'refresh_token': self._my_refresh_token,
                          'code': 'unknown'}
 
-        self._my_access_token = accesstoken.AccessToken('authorization_code',
+        self._authorization_server = 'https://authn.sd00.worldcat.org/oauth2'
+
+        self._my_access_token = accesstoken.AccessToken(self._authorization_server,
+                                                        'authorization_code',
                                                         self._options)
+
 
     def testAuthorizationServer(self):
         self.assertEqual('https://authn.sd00.worldcat.org/oauth2',
-                         accesstoken.AccessToken.authorization_server,
-                         'Unexpected authorization server endpoint: ' + self._my_access_token.authorization_server)
+                         self._my_access_token.authorization_server)
 
     """ Make sure only the correct valid access token options are listed. """
 
@@ -84,43 +87,54 @@ class AccessTokenTests(unittest.TestCase):
         self.assertEqual(self._my_access_token.code, 'unknown')
 
         with self.assertRaises(accesstoken.InvalidGrantType):
-            accesstoken.AccessToken()
+            accesstoken.AccessToken(self._authorization_server)
 
         # Tests to make sure there are no missing parameters for authorization_code
         with self.assertRaises(accesstoken.NoOptionsPassed):
-            accesstoken.AccessToken('authorization_code', {})
+            accesstoken.AccessToken(self._authorization_server, 'authorization_code', {})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('authorization_code',
+            accesstoken.AccessToken(self._authorization_server,
+                                    'authorization_code',
                                     {'authenticating_institution_id': '', 'context_institution_id': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('authorization_code', {'code': '', 'context_institution_id': ''})
+            accesstoken.AccessToken(self._authorization_server,
+                                    'authorization_code',
+                                    {'code': '', 'context_institution_id': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('authorization_code', {'code': '', 'authenticating_institution_id': ''})
+            accesstoken.AccessToken(self._authorization_server,
+                                    'authorization_code',
+                                    {'code': '', 'authenticating_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for client_credentials
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('client_credentials',
+            accesstoken.AccessToken(self._authorization_server,
+                                    'client_credentials',
                                     {'refresh_token': '', 'context_institution_id': '', 'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('refresh_token',
+            accesstoken.AccessToken(self._authorization_server,
+                                    'refresh_token',
                                     {'client_credentials': '', 'authenticating_institution_id': '', 'scope': ''})
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('client_credentials',
+            accesstoken.AccessToken(self._authorization_server,
+                                    'client_credentials',
                                     {'refresh_token': '', 'authenticating_institution_id': '',
                                      'context_institution_id': ''})
 
         # Tests to make sure there are no missing parameters for refresh_token
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('refresh_token',
+            accesstoken.AccessToken(self._authorization_server,
+                                    'refresh_token',
                                     {'authenticating_institution_id': '', 'context_institution_id': '', 'scope': ''})
 
         # Test that scope must be a list of scopes, not a string
         with self.assertRaises(accesstoken.RequiredOptionsMissing):
-            accesstoken.AccessToken('authorization_code', {'code': '',
-                                                           'redirect_uri': '',
-                                                           'authenticating_institution_id': '',
-                                                           'context_institution_id': '',
-                                                           'scope': 'WMS_ACQ'})
+            accesstoken.AccessToken(self._authorization_server,
+                                    'authorization_code',
+                                    {'code': '',
+                                     'redirect_uri': '',
+                                     'authenticating_institution_id': '',
+                                     'context_institution_id': '',
+                                     'scope': 'WMS_ACQ'})
 
     """ Make sure an expired token is calculated properly. """
 
@@ -134,7 +148,9 @@ class AccessTokenTests(unittest.TestCase):
     """ Test creation of an access token for authorization_code. """
 
     def testGetAccessTokenURLforAuthorizationCode(self):
-        sample_access_token = accesstoken.AccessToken('authorization_code', self._options)
+        sample_access_token = accesstoken.AccessToken(self._authorization_server,
+                                                      'authorization_code',
+                                                      self._options)
         self.assertEqual(sample_access_token.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=authorization_code' +
@@ -147,7 +163,9 @@ class AccessTokenTests(unittest.TestCase):
     """ Test creation of an access token for client_credentials. """
 
     def testGetAccessTokenURLforClientCredentials(self):
-        sample_access_token = accesstoken.AccessToken('client_credentials', self._options)
+        sample_access_token = accesstoken.AccessToken(self._authorization_server,
+                                                      'client_credentials',
+                                                      self._options)
         self.assertEqual(sample_access_token.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=client_credentials&' +
@@ -159,7 +177,9 @@ class AccessTokenTests(unittest.TestCase):
     """ Test creation of an access token for refresh_token. """
 
     def testGetAccessTokenURLforRefreshToken(self):
-        sample_access_token = accesstoken.AccessToken('refresh_token', self._options)
+        sample_access_token = accesstoken.AccessToken(self._authorization_server,
+                                                      'refresh_token',
+                                                      self._options)
         self.assertEqual(sample_access_token.get_access_token_url(), (
             'https://authn.sd00.worldcat.org/oauth2/accessToken?' +
             'grant_type=refresh_token' +
@@ -168,7 +188,9 @@ class AccessTokenTests(unittest.TestCase):
     """ Create a mock token response and verify parsing is corrent. """
 
     def testParseTokenResponse(self):
-        sample_access_token = accesstoken.AccessToken('authorization_code', self._options)
+        sample_access_token = accesstoken.AccessToken(self._authorization_server,
+                                                      'authorization_code',
+                                                      self._options)
         sample_access_token.parse_token_response(
             '{' +
             '"expires_at":"2014-03-13 15:44:59Z",' +
@@ -218,6 +240,7 @@ class AccessTokenTests(unittest.TestCase):
     def testStringRepresenationOfClass(self):
         """Create a new access token which hasn't been authenticated yet."""
         sample_access_token = accesstoken.AccessToken(
+            self._authorization_server,
             grant_type='authorization_code',
             options={'scope': ['WMS_NCIP', 'WMS_ACQ'],
                      'authenticating_institution_id': '128807',

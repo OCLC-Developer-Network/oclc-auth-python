@@ -27,8 +27,6 @@ from urlparse import urlparse
 import urllib
 import string
 
-AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
-
 
 class InvalidParameter(Exception):
     """Custom exception - invalid parameter was passed to class"""
@@ -54,7 +52,7 @@ class AuthCode(object):
         redirect_uri                  string   the redirect_uri for the request
         scopes                        list     a list of one or more web services
     """
-    authorization_server = AUTHORIZATION_SERVER
+    authorization_server = None
     client_id = None
     authenticating_institution_id = None
     context_institution_id = None
@@ -62,6 +60,7 @@ class AuthCode(object):
     scopes = None
 
     def __init__(self,
+                 authorization_server,
                  client_id=None,
                  authenticating_institution_id=None,
                  context_institution_id=None,
@@ -70,6 +69,7 @@ class AuthCode(object):
         """Constructor.
 
         Args:
+            authorization_server: string, url of the authorization server
             client_id: string, the public portion of the Web Services Key (WSKey)
             authenticating_institution_id: string, the institutionID that is authenticated against
             context_institution_id: string, the institutionID that the request is made against
@@ -77,6 +77,7 @@ class AuthCode(object):
             scopes: list, a list of one or more web services
         """
 
+        self.authorization_server = authorization_server
         self.client_id = client_id
         self.authenticating_institution_id = authenticating_institution_id
         self.context_institution_id = context_institution_id
@@ -117,7 +118,7 @@ class AuthCode(object):
     def get_login_url(self):
         """Returns a login url based on the auth code parameters."""
         return (
-            AuthCode.authorization_server + '/authorizeCode' +
+            self.authorization_server + '/authorizeCode' +
             '?' + 'authenticatingInstitutionId=' + self.authenticating_institution_id +
             '&' + 'client_id=' + self.client_id +
             '&' + 'contextInstitutionId=' + self.context_institution_id +

@@ -22,89 +22,101 @@ from authliboclc import authcode
 
 class AuthCodeTests(unittest.TestCase):
     def setUp(self):
-        self._authCode = authcode.AuthCode(**{
-            'client_id': '1234ABCD',
-            'authenticating_institution_id': '128807',
-            'context_institution_id': '128808',
-            'redirect_uri': 'http://www.oclc.org/test',
-            'scopes': ['WMS_NCIP', 'WMS_ACQ']
-        })
+        self._authorization_server = 'https://authn.sd00.worldcat.org/oauth2'
+
+        self._authCode = authcode.AuthCode(
+            authorization_server=self._authorization_server,
+            client_id='1234ABCD',
+            authenticating_institution_id='128807',
+            context_institution_id='128808',
+            redirect_uri='http://www.oclc.org/test',
+            scopes=['WMS_NCIP', 'WMS_ACQ']
+        )
 
     def testAuthorizationServer(self):
-        self.assertEqual(authcode.AuthCode.authorization_server, 'https://authn.sd00.worldcat.org/oauth2')
+        self.assertEqual(self._authCode.authorization_server, 'https://authn.sd00.worldcat.org/oauth2')
 
     """ Test Create AuthCode - incorrect parameters should raise exceptions."""
 
     def testCreateAuthCode(self):
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode()
+            authcode.AuthCode(authorization_server=self._authorization_server)
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'authenticating_institution_id': '128807',
-                'context_institution_id': '128808',
-                'redirect_uri': 'http://www.oclc.org/test',
-                'scopes': ['WMS_NCIP', 'WMS_ACQ']
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                authenticating_institution_id='128807',
+                context_institution_id='128808',
+                redirect_uri='http://www.oclc.org/test',
+                scopes=['WMS_NCIP', 'WMS_ACQ']
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'context_institution_id': '128808',
-                'redirect_uri': 'http://www.oclc.org/test',
-                'scopes': ['WMS_NCIP', 'WMS_ACQ']
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                context_institution_id='128808',
+                redirect_uri='http://www.oclc.org/test',
+                scopes=['WMS_NCIP', 'WMS_ACQ']
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'authenticating_institution_id': '128807',
-                'redirect_uri': 'http://www.oclc.org/test',
-                'scopes': ['WMS_NCIP', 'WMS_ACQ']
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                authenticating_institution_id='128807',
+                redirect_uri='http://www.oclc.org/test',
+                scopes=['WMS_NCIP', 'WMS_ACQ']
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'authenticating_institution_id': '128807',
-                'context_institution_id': '128808',
-                'scopes': ['WMS_NCIP', 'WMS_ACQ']
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                authenticating_institution_id='128807',
+                context_institution_id='128808',
+                scopes=['WMS_NCIP', 'WMS_ACQ']
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'authenticating_institution_id': '128807',
-                'context_institution_id': '128808',
-                'redirect_uri': 'http://www.oclc.org/test'
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                authenticating_institution_id='128807',
+                context_institution_id='128808',
+                redirect_uri='http://www.oclc.org/test'
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'authenticating_institution_id': '128807',
-                'context_institution_id': '128808',
-                'redirect_uri': 'http://www.oclc.org/test',
-                'scopes': ''
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                authenticating_institution_id='128807',
+                context_institution_id='128808',
+                redirect_uri='http://www.oclc.org/test',
+                scopes=''
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'authenticating_institution_id': '128807',
-                'context_institution_id': '128808',
-                'redirect_uri': 'http://www.oclc.org/test',
-                'scopes': []
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                authenticating_institution_id='128807',
+                context_institution_id='128808',
+                redirect_uri='http://www.oclc.org/test',
+                scopes=[]
+            )
         with self.assertRaises(authcode.InvalidParameter):
-            authcode.AuthCode(**{
-                'client_id': '1234ABCD',
-                'authenticating_institution_id': '128807',
-                'context_institution_id': '128808',
-                'redirect_uri': 'http://www.oclc.org/test',
-                'scopes': ['']
-            })
+            authcode.AuthCode(
+                authorization_server=self._authorization_server,
+                client_id='1234ABCD',
+                authenticating_institution_id='128807',
+                context_institution_id='128808',
+                redirect_uri='http://www.oclc.org/test',
+                scopes=['']
+            )
 
-        myAuthCode = authcode.AuthCode(**{
-            'client_id': '1234ABCD',
-            'authenticating_institution_id': '128807',
-            'context_institution_id': '128808',
-            'redirect_uri': 'http://www.oclc.org/test',
-            'scopes': ['WMS_NCIP', 'WMS_ACQ']
-        })
+        myAuthCode = authcode.AuthCode(
+            authorization_server=self._authorization_server,
+            client_id='1234ABCD',
+            authenticating_institution_id='128807',
+            context_institution_id='128808',
+            redirect_uri='http://www.oclc.org/test',
+            scopes=['WMS_NCIP', 'WMS_ACQ']
+        )
         self.assertEqual(myAuthCode.client_id, '1234ABCD')
         self.assertEqual(myAuthCode.authenticating_institution_id, '128807')
         self.assertEqual(myAuthCode.context_institution_id, '128808')

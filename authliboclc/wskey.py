@@ -36,6 +36,7 @@ import collections
 import copy
 import string
 
+AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
 SIGNATURE_URL = 'https://www.oclc.org/wskey'
 
 
@@ -57,18 +58,20 @@ class Wskey(object):
     """Web Services Key object
 
     Class variables
-    valid_options     dict     list of valid options that can be passed to this class
-    key               string   the clientID (public) portion of the WSKey
-    secret            string   the secret (private) portion of the WSKey
-    redirect_uri      string   the url of the web app, for example https://localhost:8000/auth/
-    services          list     the web services associated with the WSKey, for example ['WorldCatMetadataAPI']
-    debug_time_stamp  string   if not None, then overrides the calculated timestamp. Used for unit tests.
-    debug_nonce       string   if not None, then overrides the calculated nonce. Used for unit tests.
-    body_hash         string   set to None - current implementation of OCLC's OAuth2 does not use body hashing
-    auth_params       dict     custom list of authentication parameters - used for some specialized APIs
-    user              object   a user object associated with the key. See user.py in the authliboclc library folder.
+    authorization_server string   url of the authorization server
+    valid_options        dict     list of valid options that can be passed to this class
+    key                  string   the clientID (public) portion of the WSKey
+    secret               string   the secret (private) portion of the WSKey
+    redirect_uri         string   the url of the web app, for example https://localhost:8000/auth/
+    services             list     the web services associated with the WSKey, for example ['WorldCatMetadataAPI']
+    debug_time_stamp     string   if not None, then overrides the calculated timestamp. Used for unit tests.
+    debug_nonce          string   if not None, then overrides the calculated nonce. Used for unit tests.
+    body_hash            string   set to None - current implementation of OCLC's OAuth2 does not use body hashing
+    auth_params          dict     custom list of authentication parameters - used for some specialized APIs
+    user                 object   a user object associated with the key. See user.py in the authliboclc library folder.
     """
 
+    authorization_server = AUTHORIZATION_SERVER
     valid_options = ['redirect_uri', 'services']
     key = None
     secret = None
@@ -139,6 +142,7 @@ class Wskey(object):
             raise InvalidParameter('You must pass a context institution ID')
 
         authCode = AuthCode(
+            authorization_server=self.authorization_server,
             client_id=self.key,
             authenticating_institution_id=authenticating_institution_id,
             context_institution_id=context_institution_id,
@@ -169,6 +173,7 @@ class Wskey(object):
             raise InvalidParameter('You must pass a context_institution_id')
 
         accessToken = AccessToken(
+            authorization_server=self.authorization_server,
             grant_type='authorization_code',
             options={
                 'code': code,
@@ -203,6 +208,7 @@ class Wskey(object):
             raise InvalidParameter('You must set at least on service on the Wskey')
 
         accessToken = AccessToken(
+            authorization_server=self.authorization_server,
             grant_type='client_credentials',
             options={
                 'authenticating_institution_id': authenticating_institution_id,

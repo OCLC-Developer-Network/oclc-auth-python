@@ -34,8 +34,6 @@ import json
 from refreshtoken import RefreshToken
 import string
 
-AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
-
 
 class InvalidGrantType(Exception):
     """Custom exception - an invalid grant type was passed"""
@@ -100,7 +98,7 @@ class AccessToken(object):
     access_token_string = None
     access_token_url = None
     authenticating_institution_id = None
-    authorization_server = AUTHORIZATION_SERVER
+    authorization_server = None
     code = None
     context_institution_id = None
     error_code = None
@@ -133,10 +131,11 @@ class AccessToken(object):
     ]
 
 
-    def __init__(self, grant_type=None, options=None):
+    def __init__(self, authorization_server, grant_type=None, options=None):
         """Constructor.
 
         Args:
+            authorization_server: string, url of the authorization server
             grant_type: string, the type of access token request to make:
                        - authorization_code
                        - client_credentials
@@ -149,6 +148,7 @@ class AccessToken(object):
                      - code
                      - refresh_token
         """
+        self.authorization_server = authorization_server
         if grant_type == None or not grant_type in AccessToken.validGrantTypes:
             raise InvalidGrantType('You must pass a valid grant type to construct an Access Token.')
         self.grant_type = grant_type
