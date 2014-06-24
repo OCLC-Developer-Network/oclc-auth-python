@@ -45,7 +45,7 @@ class Request(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'text/html')
             self.end_headers()
             self.wfile.write('<h2>Please set the authentication parameters in ' +
-                             '<span style="color:red">access_token.py</span>, ' +
+                             '<span style="color:red">examples/authentication_token/server.py</span>, ' +
                              'lines 29 & 30.</h2>')
             return
 
