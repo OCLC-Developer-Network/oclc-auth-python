@@ -7,6 +7,16 @@ This example demonstrates how to retrieve an access token, and has the following
 * Stores the Access Token in a Session and manages a list of sessions using a simple flat file.
 * Uses the Access Token to request a Bibliographic Record from OCLC.
 
+Get the repo and install the library:
+
+1. Clone the repository:
+
+   `git clone https://github.com/OCLC-Developer-Network/oclc-auth-python.git`
+
+1. Install the library:
+
+   `sudo python setup.py install`
+
 To use the example:
 
 1. Change directories to `examples/authentication_token`

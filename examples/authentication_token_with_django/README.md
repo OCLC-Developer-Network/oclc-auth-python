@@ -3,6 +3,16 @@
 For performing client side authentication using Access Tokens, we prepared an example using django. Note that
 Access Tokens require Secure Socket Layer be implemented on the host.
 
+Get the repo and install the library:
+
+1. Clone the repository:
+
+   `git clone https://github.com/OCLC-Developer-Network/oclc-auth-python.git`
+
+1. Install the library:
+
+   `sudo python setup.py install`
+
 First, we need to install these dependencies:
 
 1. Change directories to `examples/djangoProject`.

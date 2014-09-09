@@ -107,14 +107,13 @@ class Wskey(object):
 
         """If options are included, they must include a redirect_uri and one or more services."""
         if options != None and len(options) > 0:
-            if not 'redirect_uri' in options:
-                raise InvalidParameter('Missing redirect_uri option.')
-            elif options['redirect_uri'] == None:
-                raise InvalidParameter('redirect_uri must contain a value.')
-            else:
-                scheme = urlparse(options['redirect_uri']).scheme
-                if scheme != 'http' and scheme != 'https':
-                    raise InvalidParameter('Invalid redirect_uri. Must begin with http:// or https://')
+            if 'redirect_uri' in options:
+                if options['redirect_uri'] == None:
+                    raise InvalidParameter('redirect_uri must contain a value.')
+                else:
+                    scheme = urlparse(options['redirect_uri']).scheme
+                    if scheme != 'http' and scheme != 'https':
+                        raise InvalidParameter('Invalid redirect_uri. Must begin with http:// or https://')
 
             if not 'services' in options:
                 raise InvalidParameter('Missing service option.')
@@ -187,8 +186,7 @@ class Wskey(object):
 
         return accessToken
 
-    def get_access_token_with_client_credentials(self, authenticating_institution_id=None, context_institution_id=None,
-                                                 user=None):
+    def get_access_token_with_client_credentials(self, authenticating_institution_id=None, context_institution_id=None):
         """Retrieves an Access Token using a Client Credentials Grant
 
         Args:
@@ -205,7 +203,7 @@ class Wskey(object):
         if context_institution_id == None or context_institution_id == '':
             raise InvalidParameter('You must pass a context_institution_id')
         if self.services == None or self.services == [] or len(self.services) == 0 or self.services == ['']:
-            raise InvalidParameter('You must set at least on service on the Wskey')
+            raise InvalidParameter('You must set at least one service on the Wskey')
 
         accessToken = AccessToken(
             authorization_server=self.authorization_server,
@@ -217,7 +215,7 @@ class Wskey(object):
             }
         )
 
-        accessToken.create(wskey=self, user=user)
+        accessToken.create(wskey=self)
 
         return accessToken
 

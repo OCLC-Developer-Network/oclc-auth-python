@@ -49,8 +49,6 @@ class WskeyTests(unittest.TestCase):
         with self.assertRaises(wskey.InvalidObject):
             wskey.Wskey('123ABC', '987', '')
         with self.assertRaises(wskey.InvalidParameter):
-            wskey.Wskey('123ABC', '987', {'services': ['one', 'two']})
-        with self.assertRaises(wskey.InvalidParameter):
             wskey.Wskey('123ABC', '987', {'redirect_uri': '', 'services': ['one', 'two']})
         with self.assertRaises(wskey.InvalidParameter):
             wskey.Wskey('123ABC', '987', {'redirect_uri': 'www.mylibrary123.org/myapp', 'services': ['one', 'two']})
@@ -128,26 +126,22 @@ class WskeyTests(unittest.TestCase):
         with self.assertRaises(wskey.InvalidParameter):
             self._my_wskey.get_access_token_with_client_credentials(
                 authenticating_institution_id=None,
-                context_institution_id='12808',
-                user=None
+                context_institution_id='12808'
             )
         with self.assertRaises(wskey.InvalidParameter):
             self._my_wskey.get_access_token_with_client_credentials(
                 authenticating_institution_id='',
-                context_institution_id='12808',
-                user=None
+                context_institution_id='12808'
             )
         with self.assertRaises(wskey.InvalidParameter):
             self._my_wskey.get_access_token_with_client_credentials(
                 authenticating_institution_id='128807',
-                context_institution_id=None,
-                user=None
+                context_institution_id=None
             )
         with self.assertRaises(wskey.InvalidParameter):
             self._my_wskey.get_access_token_with_client_credentials(
                 authenticating_institution_id='128807',
-                context_institution_id='',
-                user=None
+                context_institution_id=''
             )
 
     """ Verify that the calculation of an Authentication Header is correct. """

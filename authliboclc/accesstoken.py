@@ -284,7 +284,7 @@ class AccessToken(object):
         principal_id = responseJSON.get('principalID', None)
         principal_idns = responseJSON.get('principalIDNS', None)
 
-        if principal_id != None and principal_idns != None:
+        if principal_id != None and principal_idns != None and principal_id != '' and principal_idns != '':
             self.user = User(
                 authenticating_institution_id=self.authenticating_institution_id,
                 principal_id=principal_id,
@@ -311,6 +311,7 @@ class AccessToken(object):
         return string.Template("""
 access_token_url: $access_token_url
 
+access_token_string             $access_token_string
 authenticating_institution_id:  $authenticating_institution_id
 authorization_server:           $authorization_server
 code:                           $code
@@ -334,6 +335,7 @@ $wskey""").substitute({
             'access_token_url': self.access_token_url.
                 replace('?', '?\n' + ' ' * 18).
                 replace('&', '\n' + ' ' * 18 + '&'),
+            'access_token_string':self.access_token_string,
             'authenticating_institution_id': self.authenticating_institution_id,
             'authorization_server': self.authorization_server,
             'code': self.code,

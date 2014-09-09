@@ -277,6 +277,7 @@ class AccessTokenTests(unittest.TestCase):
             "                  &contextInstitutionId=128808\n" +
             "                  &redirect_uri=https%3A%2F%2Flocalhost%3A8000%2Fauth%2F\n" +
             "\n" +
+            "access_token_string             tk_TBHrsDbSrWW1oS7d3gZr7NJb7PokyOFlf0pr\n" +
             "authenticating_institution_id:  128807\n" +
             "authorization_server:           https://authn.sd00.worldcat.org/oauth2\n" +
             "code:                           unknown\n" +

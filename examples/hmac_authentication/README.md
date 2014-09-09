@@ -1,5 +1,13 @@
 ###Server Side HMAC Authentication Example
 
+1. Clone the repository:
+
+   `git clone https://github.com/OCLC-Developer-Network/oclc-auth-python.git`
+
+1. Install the library:
+
+   `sudo python setup.py install`
+
 1. Change directories to `examples/hmac_authentication`
 
 1. Edit `hmac_request_example.py` to insert your:
