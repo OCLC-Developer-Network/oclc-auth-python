@@ -66,7 +66,7 @@ print("")
 if (access_token.access_token_string != None):
     query = 'businesses+utilities+and+transportation+AND+creator:Stoll'
     dbIds = '638'
-    request_url = 'https://beta.worldcat.org/discovery/bib/search?' + 'q=' + query + '&' + 'dbIds' + '=' + dbIds
+    request_url = 'https://beta.worldcat.org/discovery/bib/search?' + 'q=' + query + '&' + 'dbIds=' + dbIds
     authorization = 'Bearer ' + access_token.access_token_string
 
     my_request = urllib2.Request(
