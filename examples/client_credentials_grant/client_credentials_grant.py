@@ -64,10 +64,10 @@ print("")
 
 # Make a DAPI Request - get a JSON Bib Record back for OCLC #52356689
 if (access_token.access_token_string != None):
-    request_url = 'https://beta.worldcat.org/discovery/bib/data/52356689'
+    query = 'businesses+utilities+and+transportation+AND+creator:Stoll'
+    dbIds = '638'
+    request_url = 'https://beta.worldcat.org/discovery/bib/search?' + 'q=' + query + '&' + 'dbIds' + '=' + dbIds
     authorization = 'Bearer ' + access_token.access_token_string
-    print("Making a request to " + request_url)
-    print(authorization)
 
     my_request = urllib2.Request(
         url=request_url,
@@ -79,6 +79,7 @@ if (access_token.access_token_string != None):
         result = urllib2.urlopen(my_request).read()
 
     except urllib2.HTTPError, e:
-        result = str(e)
+        result = "\n" + str(e) + "\n"
+        result += e.read() + "\n"
 
     print(result)
