@@ -62,7 +62,21 @@ else:
         print("refresh_token: " + access_token.refresh_token)
 print("")
 
-# Make a DAPI Request - get a JSON Bib Record back for OCLC #52356689
+# Make a Discovery API Search request with the following query:
+#   businesses+utilities+and+transportation+AND+creator:Stoll
+#
+# Documentation for the Discovery API:
+#   http://oclc.org/developer/develop/web-services/worldcat-discovery-api/bibliographic-resource.en.html
+#
+# Note that as of September 2014, some changes were made to the Discovery API:
+#
+# 1. An additional parameter is required on all searches to specify the data set:
+#   dbIds=638 - WorldCat.org data set
+#   dbIds=283 - WorldCat (traditional/proper, just the MARC cataloged stuff)
+#
+# 2. The search parameter "author" was mapped to "creator". In our example here we are searching on
+#    "creator:Stoll" rather than "author:Stoll".
+#
 if (access_token.access_token_string != None):
     query = 'businesses+utilities+and+transportation+AND+creator:Stoll'
     dbIds = '638'
