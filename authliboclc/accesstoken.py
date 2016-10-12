@@ -25,14 +25,14 @@ using the access token, or by using the principal_id and principal_idns returned
 of the access token.
 """
 
-import time
-from time import mktime
-from user import User
-import urllib
-import urllib2
 import json
-from refreshtoken import RefreshToken
 import string
+import time
+
+import six
+
+from .user import User
+from .refreshtoken import RefreshToken
 
 
 class InvalidGrantType(Exception):
@@ -130,7 +130,6 @@ class AccessToken(object):
         'client_credentials'
     ]
 
-
     def __init__(self, authorization_server, grant_type=None, options=None):
         """Constructor.
 
@@ -149,44 +148,42 @@ class AccessToken(object):
                      - refresh_token
         """
         self.authorization_server = authorization_server
-        if grant_type == None or not grant_type in AccessToken.validGrantTypes:
+        if grant_type is None or grant_type not in AccessToken.validGrantTypes:
             raise InvalidGrantType('You must pass a valid grant type to construct an Access Token.')
         self.grant_type = grant_type
 
-        if options == None or len(options) < 1:
+        if not options:
             raise NoOptionsPassed('You must pass at least one option to construct an Access Token. Valid options '
                                   'are scope, authenticating_institution_id, context_institution_id, redirect_uri, '
                                   'code and refresh_token')
 
-        if (self.grant_type == 'authorization_code' and (
-                            not 'code' in options or
-                            not 'redirect_uri' in options or
-                        not 'authenticating_institution_id' in options or
-                    not 'context_institution_id' in options)
-        ):
+        if self.grant_type == 'authorization_code' and (
+                            'code' not in options or
+                            'redirect_uri' not in options or
+                            'authenticating_institution_id' not in options or
+                            'context_institution_id' not in options):
             raise RequiredOptionsMissing('You must pass the options: code, redirect_uri, '
                                          'authenticating_institution_id and context_institution_id to construct an Access '
                                          'Token using the authorization_code grant type.')
 
-        elif (self.grant_type == 'client_credentials' and (
+        elif self.grant_type == 'client_credentials' and (
                             not 'scope' in options or
                             not 'authenticating_institution_id' in options or
-                        not 'context_institution_id' in options or
-                    not 'scope' in options)):
+                            not 'context_institution_id' in options or
+                            not 'scope' in options):
             raise RequiredOptionsMissing(
                 'You must pass the options: scope, authenticating_institution_id and context_institution_id ' +
                 'to construct an Access Token using the client_credential grant type.')
 
-        elif (self.grant_type == 'refresh_token' and (
-                not 'refresh_token' in options)):
+        elif self.grant_type == 'refresh_token' and 'refresh_token' not in options:
             raise RequiredOptionsMissing(
                 'You must pass the option refresh_token to construct an Access Token using the ' +
                 'refresh_token grant type.')
 
-        if ('scope' in options and type(options['scope']) is not list):
+        if 'scope' in options and not isinstance(options['scope'], list):
             raise RequiredOptionsMissing("scope must be a list of one or more scopes, i.e. ['WMS_NCIP' {, ...}]")
 
-        for key, value in options.items():
+        for key, value in six.iteritems(options):
             if key in AccessToken.valid_options:
                 setattr(self, key, value)
 
@@ -195,18 +192,18 @@ class AccessToken(object):
     def is_expired(self):
         """Test if the token is expired. Returns true if it is."""
         status = False
-        if mktime(time.strptime(self.expires_at, "%Y-%m-%d %H:%M:%SZ")) < time.time():
+        if time.mktime(time.strptime(self.expires_at, "%Y-%m-%d %H:%M:%SZ")) < time.time():
             status = True
         return status
 
     def create(self, wskey, user=None):
         """Create an access token."""
-        if wskey.__class__.__name__ != 'Wskey':
+        if not wskey.__class__.__name__ == 'Wskey':
             raise InvalidObject('A valid Wskey object is required.')
-        elif not user == None and not user.__class__.__name__ == 'User':
+        elif user is not None and not user.__class__.__name__ == 'User':
             raise InvalidObject('A valid User object is required.')
         self.wskey = wskey
-        if user != None:
+        if user is not None:
             self.user = user
             self.options = {'user': self.user}
         authorization = self.wskey.get_hmac_signature(
@@ -217,7 +214,7 @@ class AccessToken(object):
 
     def refresh(self):
         """Refresh an access token."""
-        if self.wskey == None:
+        if self.wskey is None:
             raise InvalidObject('AccessToken must have an associated WSKey Property')
 
         self.grant_type = 'refresh_token'
@@ -227,20 +224,19 @@ class AccessToken(object):
 
     def request_access_token(self, authorization, url):
         """ Request an access token. """
-        request = urllib2.Request(
+        request = six.moves.urllib.request.Request(
             url=url,
             data="",
             headers={'Authorization': authorization,
                      'Accept': 'application/json'}
         )
 
-        opener = urllib2.build_opener()
+        opener = six.moves.urllib.request.build_opener()
 
         try:
             result = opener.open(request)
             self.parse_token_response(result.read())
-
-        except urllib2.HTTPError, e:
+        except six.moves.urllib.error.HTTPError as e:
             self.parse_error_response(e)
 
     def get_access_token_url(self):
@@ -253,7 +249,7 @@ class AccessToken(object):
                 '&' + 'code=' + self.code +
                 '&' + 'authenticatingInstitutionId=' + self.authenticating_institution_id +
                 '&' + 'contextInstitutionId=' + self.context_institution_id +
-                '&' + urllib.urlencode({'redirect_uri': self.redirect_uri}))
+                '&' + six.moves.urllib.parse.urlencode({'redirect_uri': self.redirect_uri}))
         elif self.grant_type == 'client_credentials':
             access_token_url += (
                 '&authenticatingInstitutionId=' + self.authenticating_institution_id +
@@ -264,46 +260,48 @@ class AccessToken(object):
 
         return access_token_url
 
-
-    def parse_token_response(self, responseString):
-        """Parse the url string which consists of the redirect_uri followed by the access token parameters."""
+    def parse_token_response(self, response_string):
+        """
+        Parse the url string which consists of the redirect_uri followed by
+        the access token parameters.
+        """
         try:
-            responseJSON = json.loads(responseString)
+            response_json = json.loads(response_string)
         except ValueError:
-            print "ValueError: Unable to decode this Access Token response string to JSON:"
-            print responseString
+            print("ValueError: Unable to decode this Access Token response string to JSON:")
+            print(response_string)
             return
 
-        self.access_token_string = responseJSON.get('access_token', None)
-        self.type = responseJSON.get('token_type', None)
-        self.expires_at = responseJSON.get('expires_at', None)
-        self.expires_in = responseJSON.get('expires_in', None)
-        self.context_institution_id = responseJSON.get('context_institution_id', None)
-        self.error_code = responseJSON.get('error_code', None)
+        self.access_token_string = response_json.get('access_token', None)
+        self.type = response_json.get('token_type', None)
+        self.expires_at = response_json.get('expires_at', None)
+        self.expires_in = response_json.get('expires_in', None)
+        self.context_institution_id = response_json.get('context_institution_id', None)
+        self.error_code = response_json.get('error_code', None)
 
-        principal_id = responseJSON.get('principalID', None)
-        principal_idns = responseJSON.get('principalIDNS', None)
+        principal_id = response_json.get('principalID', None)
+        principal_idns = response_json.get('principalIDNS', None)
 
-        if principal_id != None and principal_idns != None and principal_id != '' and principal_idns != '':
+        if principal_id is not None and principal_idns is not None and not principal_id == '' and not principal_idns == '':
             self.user = User(
                 authenticating_institution_id=self.authenticating_institution_id,
                 principal_id=principal_id,
                 principal_idns=principal_idns
             )
 
-        refresh_token = responseJSON.get('refresh_token', None)
+        refresh_token = response_json.get('refresh_token', None)
 
-        if refresh_token != None:
+        if refresh_token is not None:
             self.refresh_token = RefreshToken(
                 tokenValue=refresh_token,
-                expires_in=responseJSON.get('refresh_token_expires_in', None),
-                expires_at=responseJSON.get('refresh_token_expires_at', None)
+                expires_in=response_json.get('refresh_token_expires_in', None),
+                expires_at=response_json.get('refresh_token_expires_at', None)
             )
 
-    def parse_error_response(self, httpError):
-        self.error_code = httpError.getcode()
-        self.error_message = str(httpError)
-        self.error_url = httpError.geturl()
+    def parse_error_response(self, http_error):
+        self.error_code = http_error.getcode()
+        self.error_message = str(http_error)
+        self.error_url = http_error.geturl()
         return ''
 
     def __str__(self):
