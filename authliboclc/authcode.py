@@ -16,16 +16,16 @@
 # limitations under the License.
 ###############################################################################
 
-"""Class represents and authentication code object
+"""
+Class represents and authentication code object
 
 HMAC Requests, which are strictly server side, use an Authenication Code object to store their parameters
 and perform hashing.
-
 """
 
-from urlparse import urlparse
-import urllib
 import string
+
+import six
 
 
 class InvalidParameter(Exception):
@@ -84,36 +84,35 @@ class AuthCode(object):
         self.redirect_uri = redirect_uri
         self.scopes = scopes
 
-        if self.client_id == None:
+        if self.client_id is None:
             raise InvalidParameter('Required option missing: client_id.')
         elif self.client_id == '':
             raise InvalidParameter('Cannot be empty string: client_id.')
 
-        if self.authenticating_institution_id == None:
+        if self.authenticating_institution_id is None:
             raise InvalidParameter('Required option missing: authenticating_institution_id.')
         elif self.authenticating_institution_id == '':
             raise InvalidParameter('Cannot be empty string: authenticating_institution_id.')
 
-        if self.context_institution_id == None:
+        if self.context_institution_id is None:
             raise InvalidParameter('Required option missing: context_institution_id.')
         elif self.context_institution_id == '':
             raise InvalidParameter('Cannot be empty string: context_institution_id.')
 
-        if self.redirect_uri == None:
+        if self.redirect_uri is None:
             raise InvalidParameter('Required option missing: redirect_uri.')
         elif self.redirect_uri == '':
             raise InvalidParameter('Cannot be empty string: redirect_uri.')
         else:
-            scheme = urlparse("".join(self.redirect_uri)).scheme
-            if scheme != 'http' and scheme != 'https':
+            scheme = six.moves.urllib.parse.urlparse("".join(self.redirect_uri)).scheme
+            if not scheme == 'http' and not scheme == 'https':
                 raise InvalidParameter('Invalid redirect_uri. Must begin with http:// or https://')
 
-        if self.scopes == None or self.scopes == '':
+        if self.scopes is None or self.scopes == '':
             raise InvalidParameter(
                 'Required option missing: scopes. Note scopes must be a list of one or more scopes.')
-        elif len(self.scopes) == 0 or self.scopes[0] == None or self.scopes[0] == '':
+        elif not self.scopes or not self.scopes[0]:
             raise InvalidParameter('You must pass at least one valid scope')
-
 
     def get_login_url(self):
         """Returns a login url based on the auth code parameters."""
@@ -122,7 +121,7 @@ class AuthCode(object):
             '?' + 'authenticatingInstitutionId=' + self.authenticating_institution_id +
             '&' + 'client_id=' + self.client_id +
             '&' + 'contextInstitutionId=' + self.context_institution_id +
-            '&' + urllib.urlencode({'redirect_uri': self.redirect_uri}) +
+            '&' + six.moves.urllib.parse.urlencode({'redirect_uri': self.redirect_uri}) +
             '&' + 'response_type=code' +
             '&' + 'scope=' + " ".join(self.scopes)
         )
