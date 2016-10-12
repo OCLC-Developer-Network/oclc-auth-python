@@ -25,7 +25,6 @@
 """
 
 import time
-from time import mktime
 import string
 
 
@@ -56,10 +55,10 @@ class RefreshToken(object):
             expires_at: string, the ISO 8601 time that the refresh token expires at
             expires_in: int, the number of seconds until the token expires
         """
-        if tokenValue == None or expires_in == None or expires_at == None:
+        if tokenValue is None or expires_in is None or expires_at is None:
             raise InvalidParameter('You must pass these parameters: tokenValue, expires_in and expires_at')
 
-        if type(expires_in) is not int:
+        if not isinstance(expires_in, int):
             raise InvalidParameter('expires_in must be an int')
 
         self.refresh_token = tokenValue
@@ -73,7 +72,7 @@ class RefreshToken(object):
             isExpired: boolean, true if refresh token is expired
         """
         status = False
-        if mktime(time.strptime(self.expires_at, "%Y-%m-%d %H:%M:%SZ")) < time.time():
+        if time.mktime(time.strptime(self.expires_at, "%Y-%m-%d %H:%M:%SZ")) < time.time():
             status = True
         return status
 
