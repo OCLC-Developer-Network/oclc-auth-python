@@ -54,11 +54,11 @@ class User(object):
             principal_id: string, the principal identifier
             principal_idns: string, the principal identifier namespace
         """
-        if authenticating_institution_id == None or authenticating_institution_id == '':
+        if not authenticating_institution_id:
             raise InvalidParameter('You must set a valid Authenticating Institution ID')
-        if principal_id == None or principal_id == '':
+        if not principal_id:
             raise InvalidParameter('You must set a valid principal_id')
-        if principal_idns == None or principal_idns == '':
+        if not principal_idns:
             raise InvalidParameter('You must set a valid principal_idns')
 
         self.authenticating_institution_id = authenticating_institution_id
