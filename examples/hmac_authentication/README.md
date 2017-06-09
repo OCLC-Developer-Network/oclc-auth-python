@@ -13,9 +13,9 @@
 1. Edit `hmac_request_example.py` to insert your:
     * key
     * secret
-    * principalID
-    * principalIDNS
-    * authenticatingInstitutionID
+    * principal_id
+    * principal_idns
+    * authenticating_institution_id
 <br><br>
 1. Run from the command line:
 

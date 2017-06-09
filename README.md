@@ -18,16 +18,16 @@ Install the library:
 Running the Examples
 ====================
 
-###Server Side HMAC Authentication Example
+### Server Side HMAC Authentication Example
 
 1. Change directories to `examples/hmac_authentication`
 
 1. Edit `hmac_request_example.py` to insert your:
     * key
     * secret
-    * principalID
-    * principalIDNS
-    * authenticatingInstitutionID
+    * principal_id
+    * principal_idns
+    * authenticating_institution_id
 <br><br>
 1. Run from the command line:
 
@@ -45,15 +45,15 @@ Running the Examples
        ...
    </pre>
 
-###Getting an Access Token with Client Credentials Grant Example
+### Getting an Access Token with Client Credentials Grant Example
 
 1. Change directories to `examples/client_credentials grant`
 
 1. Edit `client_credentials_grant.py` to insert your:
     * key
     * secret
-    * authenticatingInstitutionID
-    * contextInstitutionId
+    * authenticating_institution_id
+    * context_institution_id
 <br><br>
 1. Run from the command line:
 
@@ -80,7 +80,7 @@ Running the Examples
                   scope=WorldCatDiscoveryAPI
    </pre>
 
-###User Authentication and Access Token Example
+### User Authentication and Access Token Example
 
 This example demonstrates how to retrieve an access token, and has the following features:
 * Provides a basic HTTPS server
@@ -110,7 +110,7 @@ To use the example:
     Do not be concerned about "security warnings" - click through them. That is expected with the supplied, unsigned
     CACERT in server.pem. In production, you will use your institution's signed CACERT when implementing SSL.
 
-###User Authentication and Access Token Django Example
+### User Authentication and Access Token Django Example
 
 For performing client side authentication using Access Tokens, we prepared an example using a popular framework, Django.
 We show how to set up a simple Django App and implement SSL on the localhost for testing.
@@ -188,9 +188,9 @@ You must supply authentication parameters. OCLC Web Service Keys can be <a href=
 <pre>
 key = '{clientID}'
 secret = '{secret}'
-principalID = '{principalID}'
-principalIDNS = '{principalIDNS}'
-authenticatingInstitutionID = '{institutionID}'
+principal_id = '{principalID}'
+principal_idns = '{principalIDNS}'
+authenticating_institution_id = '{institutionID}'
 </pre>
 
 Construct a request URL. See <a href="http://www.oclc.org/developer/develop/web-services.en.html">OCLC web services documentation</a>. For example, to request a Bibliographic Record:
@@ -209,9 +209,9 @@ myWskey = wskey.Wskey(
 )
 
 myUser = user.User(
-    authenticatingInstitutionID=authenticatingInstitutionID,
-    principalID=principalID,
-    principalIDNS=principalIDNS
+    authenticating_institution_id=authenticating_institution_id,
+    principal_id=principal_id,
+    principal_idns=principal_idns
 )
 </pre>
 
@@ -274,10 +274,10 @@ exchanged by the client to obtain Access Tokens:
 1. You need to gather your authentication parameters:
     * key
     * secret
-    * contextInstitutionID
-    * authenticatingInstitutionID
+    * context_institution_id
+    * authenticating_institution_id
     * services (api service name, ie `WorldCatMetadataAPI` for the <a href="http://www.oclc.org/developer/develop/web-services/worldcat-metadata-api.en.html">Metadata API</a>
-    * redirectUri (where your app runs on the web, i.e. `https://localhost:8000/auth/`
+    * redirect_uri (where your app runs on the web, i.e. `https://localhost:8000/auth/`
 
 1. Create a wskey object:
    <pre>
@@ -294,8 +294,8 @@ exchanged by the client to obtain Access Tokens:
 1. Generate a login URL and redirect to it:
    <pre>
    loginUrl = myWskey.getLoginUrl(
-        authenticatingInstitutionId='{your institutionId}',
-        contextInstitutionId='{your institutionId}'
+        authenticating_institution_id='{your institutionId}',
+        context_institution_id='{your institutionId}'
     )
     response['Location'] = loginUrl
     response.status_code = '303'
@@ -304,7 +304,7 @@ exchanged by the client to obtain Access Tokens:
 1. The user will be prompted to sign in with a UserId and Password. If they authenticate successfully, you will
 receive back a url with a code parameter embedded in it. Parse out the code parameter to be used to request an Access Token.
 
-####Use the Authorization Code to request an Access Token.
+#### Use the Authorization Code to request an Access Token.
 
 An Access Token is a unique string which the client will send to the web service in order to authenticate itself. Each
 Access Token represents a particular application’s right to access set of web services, on behalf of a given user in
@@ -314,8 +314,8 @@ This library function takes the <strong>code</strong> and makes the Access Token
 
     accessToken = myWskey.getAccessTokenWithAuthCode(
         code=code,
-        authenticatingInstitutionId='128807',
-        contextInstitutionId='128807'
+        authenticating_institution_id='128807',
+        context_institution_id='128807'
     )
 
 The access token object has these parameters:
@@ -325,10 +325,10 @@ The access token object has these parameters:
 * expiresAt (ISO 8601 time)
 * expiresIn (int, seconds)
 * user
-    * principalID
-    * principalIDNS
-    * authenticatingInstitutionI
-* contextInstitutionId
+    * principalprincipal_id
+    * principal_idns
+    * authenticating_institution_id
+* context_institution_id
 * errorCode
 
 If you include <strong>refresh_token</strong> as one of the services, you will also get back a refresh token:
@@ -339,7 +339,7 @@ If you include <strong>refresh_token</strong> as one of the services, you will a
     * expiresIn (int, seconds)
 
 
-####Making requests with the Access Token
+#### Making requests with the Access Token
 
 Our access token has a user object which contains a principalID and principalIDNS. We can use those parameters to make
 a Bibliographic Record request. For example, let's retrieve the record for OCLC Number 823520553:

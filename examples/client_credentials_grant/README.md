@@ -13,8 +13,8 @@
 1. Edit `client_credentials_grant.py` to insert your:
     * key
     * secret
-    * authenticatingInstitutionID
-    * contextInstitutionId
+    * authenticating_institution_id
+    * context_institution_id
 <br><br>
 1. Run from the command line:
 
