@@ -22,19 +22,19 @@ Stores the WSKey parameters and methods for HMAC Hashing and requesting access t
 
 """
 
-from urlparse import urlparse
-import urllib
-from authcode import AuthCode
-from accesstoken import AccessToken
-import time
+import copy
+import base64
+import hashlib
+import hmac
 import math
 import random
-import hmac
-import hashlib
-import base64
-import collections
-import copy
 import string
+import time
+
+from .authcode import AuthCode
+from .accesstoken import AccessToken
+
+import six
 
 AUTHORIZATION_SERVER = 'https://authn.sd00.worldcat.org/oauth2'
 SIGNATURE_URL = 'https://www.oclc.org/wskey'
@@ -97,7 +97,7 @@ class Wskey(object):
                                * note that including 'refresh_token' as a service causes access token requests
                                  to return a refresh token with the access token.
         """
-        if key == None or secret == None:
+        if key is None or secret is None:
             raise InvalidObject('A valid key and secret are required to construct a WSKey.')
         elif options == '':
             raise InvalidObject('Options must be sent as a dictionary object.')
@@ -106,24 +106,23 @@ class Wskey(object):
         self.secret = secret
 
         """If options are included, they must include a redirect_uri and one or more services."""
-        if options != None and len(options) > 0:
+        if options:
             if 'redirect_uri' in options:
-                if options['redirect_uri'] == None:
+                if options['redirect_uri'] is None:
                     raise InvalidParameter('redirect_uri must contain a value.')
                 else:
-                    scheme = urlparse(options['redirect_uri']).scheme
-                    if scheme != 'http' and scheme != 'https':
+                    scheme = six.moves.urllib.parse.urlparse(options['redirect_uri']).scheme
+                    if not scheme == 'http' and not scheme == 'https':
                         raise InvalidParameter('Invalid redirect_uri. Must begin with http:// or https://')
 
-            if not 'services' in options:
+            if 'services' not in options:
                 raise InvalidParameter('Missing service option.')
-            elif options['services'] == None or len(options['services']) == 0:
+            elif not options['services']:
                 raise InvalidParameter('A list containing at least one service is required.')
 
-            for key, value in options.items():
+            for key, value in six.iteritems(options):
                 if key in Wskey.valid_options:
                     setattr(self, key, value)
-
 
     def get_login_url(self, authenticating_institution_id=None, context_institution_id=None):
         """Creates a login url.
@@ -135,9 +134,9 @@ class Wskey(object):
         Returns:
             string, the login URL to be used to authenticate the user
         """
-        if authenticating_institution_id == None:
+        if authenticating_institution_id is None:
             raise InvalidParameter('You must pass an authenticating institution ID')
-        if context_institution_id == None:
+        if context_institution_id is None:
             raise InvalidParameter('You must pass a context institution ID')
 
         authCode = AuthCode(
@@ -164,11 +163,11 @@ class Wskey(object):
             object, an access token
         """
 
-        if code == None or code == '':
+        if not code:
             raise InvalidParameter('You must pass a code')
-        if authenticating_institution_id == None or authenticating_institution_id == '':
+        if not authenticating_institution_id:
             raise InvalidParameter('You must pass an authenticating_institution_id')
-        if context_institution_id == None or context_institution_id == '':
+        if not context_institution_id:
             raise InvalidParameter('You must pass a context_institution_id')
 
         accessToken = AccessToken(
@@ -192,17 +191,16 @@ class Wskey(object):
         Args:
             authenticating_institution_id: string, the institution the user authenticates against
             context_institution_id: string, the institution that the requests will be made against
-            user: object, a user object
 
         Returns:
             object, an access token
         """
 
-        if authenticating_institution_id == None or authenticating_institution_id == '':
+        if not authenticating_institution_id:
             raise InvalidParameter('You must pass an authenticating_institution_id')
-        if context_institution_id == None or context_institution_id == '':
+        if not context_institution_id:
             raise InvalidParameter('You must pass a context_institution_id')
-        if self.services == None or self.services == [] or len(self.services) == 0 or self.services == ['']:
+        if not self.services or self.services == ['']:
             raise InvalidParameter('You must set at least one service on the Wskey')
 
         accessToken = AccessToken(
@@ -234,23 +232,23 @@ class Wskey(object):
             authorization_header: string, the Authorization header to be added to the request.
         """
 
-        if self.secret == None or self.secret == '':
+        if not self.secret:
             raise InvalidParameter('You must construct a WSKey with a secret to build an HMAC Signature.')
-        if method == None or method == '':
+        if not method:
             raise InvalidParameter('You must pass an HTTP Method to build an HMAC Signature.')
-        if request_url == None or request_url == '':
+        if not request_url:
             raise InvalidParameter('You must pass a valid request URL to build an HMAC Signature.')
 
-        if options != None:
-            for key, value in options.items():
+        if options is not None:
+            for key, value in six.iteritems(options):
                 setattr(self, key, value)
 
         timestamp = self.debug_time_stamp
-        if timestamp == None or timestamp == '':
+        if not timestamp:
             timestamp = str(int(time.time()))
 
         nonce = self.debug_nonce
-        if nonce == None or nonce == '':
+        if not nonce:
             nonce = str(hex(int(math.floor(random.random() * 4026531839 + 268435456))))
 
         signature = self.sign_request(
@@ -269,13 +267,12 @@ class Wskey(object):
                                 "nonce=" + q + nonce + qc +
                                 "signature=" + q + signature)
 
-        if self.user != None or self.auth_params != None:
+        if self.user is not None or self.auth_params is not None:
             authorization_header += (qc + self.add_auth_params(self.user, self.auth_params))
         else:
             authorization_header += q
 
         return authorization_header
-
 
     def sign_request(self, method, request_url, timestamp, nonce):
         """Requests a normalized request and hashes it
@@ -296,9 +293,10 @@ class Wskey(object):
             nonce=nonce
         )
 
-        digest = hmac.new(self.secret, msg=normalized_request, digestmod=hashlib.sha256).digest()
+        digest = hmac.new(self.secret.encode('utf-8'),
+                          msg=normalized_request.encode('utf-8'),
+                          digestmod=hashlib.sha256).digest()
         return str(base64.b64encode(digest).decode())
-
 
     def normalize_request(self, method, request_url, timestamp, nonce):
         """Prepares a normalized request for hashing
@@ -313,12 +311,12 @@ class Wskey(object):
             normalized_request: string, the normalized request to be hashed
         """
         signature_url = SIGNATURE_URL
-        parsed_signature_url = urlparse(urllib.unquote(signature_url).decode('utf-8'))
-        parsed_request_url = urlparse(urllib.unquote(request_url).decode('utf-8'))
+        parsed_signature_url = six.moves.urllib.parse.urlparse(six.moves.urllib.parse.unquote(signature_url))
+        parsed_request_url = six.moves.urllib.parse.urlparse(six.moves.urllib.parse.unquote(request_url))
 
         host = str(parsed_signature_url.netloc)
 
-        if parsed_signature_url.port != None:
+        if parsed_signature_url.port is not None:
             port = str(parsed_signature_url.port)
         else:
             if str(parsed_signature_url.scheme) == 'http':
@@ -330,7 +328,7 @@ class Wskey(object):
 
         """ OCLC's OAuth implementation does not currently use body hashing, so this should always be ''."""
         body_hash = ''
-        if self.body_hash != None:
+        if self.body_hash is not None:
             body_hash = self.body_hash
 
         """The base normalized request."""
@@ -345,22 +343,21 @@ class Wskey(object):
 
         """Add the request parameters to the normalized request."""
         parameters = {}
-        if parsed_request_url.query != None and parsed_request_url.query != '':
+        if parsed_request_url.query:
             for param in parsed_request_url.query.split('&'):
                 key = (param.split('='))[0]
                 value = (param.split('='))[1]
                 parameters[key] = value
 
         """URL encode normalized request per OAuth 2 Official Specification."""
-        for key in collections.OrderedDict(sorted(parameters.items())):
-            nameAndValue = urllib.urlencode({key: parameters[key]})
+        for key in sorted(parameters):
+            nameAndValue = six.moves.urllib.parse.urlencode({key: parameters[key]})
             nameAndValue = nameAndValue.replace('+', '%20')
             nameAndValue = nameAndValue.replace('*', '%2A')
             nameAndValue = nameAndValue.replace('%7E', '~')
             normalized_request += nameAndValue + '\n'
 
         return normalized_request
-
 
     def add_auth_params(self, user, auth_params):
         """Adds users custom authentication parameters, if any, to the Normalized request
@@ -375,16 +372,16 @@ class Wskey(object):
         authValuePairs = ''
         combinedParams = copy.copy(auth_params)
 
-        if combinedParams == None or combinedParams == '':
+        if not combinedParams:
             combinedParams = {}
 
-        if user != None:
+        if user is not None:
             combinedParams['principalID'] = user.principal_id
             combinedParams['principalIDNS'] = user.principal_idns
 
         counter = 0
 
-        for key in collections.OrderedDict(sorted(combinedParams.items())):
+        for key in sorted(combinedParams):
 
             authValuePairs += key + '=' + '"' + combinedParams[key]
             counter += 1
