@@ -1,7 +1,7 @@
-OCLC Python 2.7 Authentication Library
+OCLC Python Authentication Library
 ==================================
 
-This library is a wrapper around the Web Service Authentication system used by OCLC web services, written for Python 2.7.
+This library is a wrapper around the Web Service Authentication system used by OCLC web services, written for Python. It works with versions 2.7 and 3 (up to 3.6)
 
 Installation
 ------------
