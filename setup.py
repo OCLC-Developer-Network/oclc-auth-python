@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+import setuptools
 
 setup(
     name = 'authliboclc',
@@ -11,4 +12,5 @@ setup(
     author_email = "devnet@oclc.org",
     url = 'http://oclc.org/developer/home.en.html',
     download_url = 'git@github.com:OCLC-Developer-Network/oclc-auth-python.git',
+    install_requires = ['six>=1']
 )

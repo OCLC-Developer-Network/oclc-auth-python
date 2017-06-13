@@ -176,7 +176,7 @@ class WskeyTests(unittest.TestCase):
                     'userid="tasty"'
         )
 
-        self.assertEquals(AuthenticationHeader, expected)
+        self.assertEqual(AuthenticationHeader, expected)
 
     """ Verify the correctness of the hashing algorithm. """
 
