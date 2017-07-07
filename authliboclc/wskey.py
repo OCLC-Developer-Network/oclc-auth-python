@@ -225,7 +225,7 @@ class Wskey(object):
             request_url: string, the url to be signed
             options: dict
                      - user: object, a user object
-                     - authparams: dict, various key value pairs to be added to the authorization header. For example,
+                     - auth_params: dict, various key value pairs to be added to the authorization header. For example,
                                    userid and password. Depends on the API and its specialized needs.
 
         Returns:
