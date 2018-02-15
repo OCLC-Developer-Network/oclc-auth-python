@@ -47,7 +47,7 @@ Running the Examples
 
 ### Getting an Access Token with Client Credentials Grant Example
 
-1. Change directories to `examples/client_credentials grant`
+1. Change directories to `examples/client_credentials_grant`
 
 1. Edit `client_credentials_grant.py` to insert your:
     * key
@@ -196,19 +196,19 @@ authenticating_institution_id = '{institutionID}'
 Construct a request URL. See <a href="http://www.oclc.org/developer/develop/web-services.en.html">OCLC web services documentation</a>. For example, to request a Bibliographic Record:
 
 <pre>
-requestUrl = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
+request_url = 'https://worldcat.org/bib/data/823520553?classificationScheme=LibraryOfCongress&holdingLibraryCode=MAIN'
 </pre>
 
 Construct the <strong>wskey</strong> and <strong>user</strong> objects. 
 
 <pre>
-myWskey = wskey.Wskey(
+my_wskey = wskey.Wskey(
     key=key,
     secret=secret,
     options=None
 )
 
-myUser = user.User(
+my_user = user.User(
     authenticating_institution_id=authenticating_institution_id,
     principal_id=principal_id,
     principal_idns=principal_idns
@@ -220,12 +220,12 @@ Note that the options parameter is for access token use and you do not need to a
 Calculate the Authorization header:
 
 <pre>
-authorizationHeader = myWskey.getHMACSignature(
+authorization_header = my_wskey.get_hmac_signature(
     method='GET',
-    requestUrl=requestUrl,
+    request_url=request_url,
     options={
-        'user': myUser,
-        'authParams': None}
+        'user': my_user,
+        'auth_params': None}
 )
 </pre>
 
@@ -233,10 +233,10 @@ With our request URL and Authorization header prepared, we are ready to use Pyth
 library to make the GET request.
 
 <pre>
-myRequest = urllib2.Request(
-    url=requestUrl,
+my_request = urllib2.Request(
+    url=request_url,
     data=None,
-    headers={'Authorization': authorizationHeader}
+    headers={'Authorization': authorization_header}
 )
 
 try:
@@ -286,18 +286,18 @@ exchanged by the client to obtain Access Tokens:
        secret=secret,
        options={
            'services': ['service1' {,'service2',...} ],
-           'redirectUri': redirectUri
+           'redirect_uri': redirect_uri
        }
    )
    </pre>
 
 1. Generate a login URL and redirect to it:
    <pre>
-   loginUrl = myWskey.getLoginUrl(
+   login_url = myWskey.get_login_url(
         authenticating_institution_id='{your institutionId}',
         context_institution_id='{your institutionId}'
     )
-    response['Location'] = loginUrl
+    response['Location'] = login_url
     response.status_code = '303'
     </pre>
 
@@ -312,7 +312,7 @@ order to read or write data associated with a specific institution during a spec
 
 This library function takes the <strong>code</strong> and makes the Access Token request, returning the Access Token object.
 
-    accessToken = myWskey.getAccessTokenWithAuthCode(
+    access_token = myWskey.get_access_token_with_auth_code(
         code=code,
         authenticating_institution_id='128807',
         context_institution_id='128807'
@@ -325,7 +325,7 @@ The access token object has these parameters:
 * expiresAt (ISO 8601 time)
 * expiresIn (int, seconds)
 * user
-    * principalprincipal_id
+    * principal_id
     * principal_idns
     * authenticating_institution_id
 * context_institution_id
@@ -345,7 +345,7 @@ Our access token has a user object which contains a principalID and principalIDN
 a Bibliographic Record request. For example, let's retrieve the record for OCLC Number 823520553:
 
 <pre>
-requestUrl = (
+request_url = (
     'https://worldcat.org/bib/data/823520553?' +
     'classificationScheme=LibraryOfCongress' +
     '&holdingLibraryCode=MAIN'
@@ -355,11 +355,11 @@ requestUrl = (
 Now we construct an authorization header using our Access Token's user parameter:
 
 <pre>
-authorizationHeader = wskey.getHMACSignature(
+authorization_header = wskey.get_hmac_signature(
     method='GET',
-    requestUrl=requestUrl,
+    request_url=request_url,
     options={
-        'user': accessToken.user
+        'user': access_token.user
     }
 )
 </pre>
@@ -368,9 +368,9 @@ Finally, we make the request:
 
 <pre>
 myRequest = urllib2.Request(
-    url=requestUrl,
+    url=request_url,
     data=None,
-    headers={'Authorization': authorizationHeader}
+    headers={'Authorization': authorization_header}
 )
 
 try:
