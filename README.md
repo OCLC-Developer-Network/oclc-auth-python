@@ -5,8 +5,11 @@ This library is a wrapper around the Web Service Authentication system used by O
 
 Installation
 ------------
+The easiest way to install is via pip:
 
-Clone the repository:
+`pip install authliboclc`
+
+Alternatively, clone the repository:
 
 `git clone https://github.com/OCLC-Developer-Network/oclc-auth-python.git`
 
