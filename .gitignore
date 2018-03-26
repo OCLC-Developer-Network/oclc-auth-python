@@ -26,3 +26,4 @@ switcher.py
 MANIFEST
 *.p
 *.sh
+/.project
