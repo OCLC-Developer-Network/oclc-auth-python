@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
-import setuptools
+from setuptools import setup
 
 setup(
     name = 'authliboclc',
     packages = ['authliboclc'],
-    version = "0.0.1",
+    version = "0.0.2",
     license='Apache2',
     description = "OCLC API Authentication Library",
     author = 'OCLC Platform Team',
