@@ -254,7 +254,7 @@ class AccessToken(object):
             access_token_url += (
                 '&authenticatingInstitutionId=' + self.authenticating_institution_id +
                 '&contextInstitutionId=' + self.context_institution_id +
-                '&scope=' + ' '.join(self.scope))
+                '&scope=' + '%20'.join(self.scope))
         else:
             access_token_url = ''
 
