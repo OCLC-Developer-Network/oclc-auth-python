@@ -180,7 +180,7 @@ class AccessTokenTests(unittest.TestCase):
             'grant_type=client_credentials&' +
             'authenticatingInstitutionId=128807&' +
             'contextInstitutionId=128808&' +
-            'scope=WMS_NCIP WMS_ACQ')
+            'scope=WMS_NCIP%20WMS_ACQ')
         )
 
     """ Test creation of an access token for refresh_token. """
