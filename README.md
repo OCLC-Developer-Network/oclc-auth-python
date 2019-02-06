@@ -7,7 +7,7 @@ Installation
 ------------
 The easiest way to install is via pip:
 
-`pip install authliboclc`
+`pip install git+git:https://github.com/OCLC-Developer-Network/oclc-auth-python`
 
 Alternatively, clone the repository:
 
@@ -122,13 +122,13 @@ First, we need to install these dependencies:
 
 1. Change directories to `examples/djangoProject`.
 
-1. Install `pip` if you have not already - <a href="http://www.pip-installer.org/en/latest/">pip</a>. 
+2. Install `pip` if you have not already - <a href="http://www.pip-installer.org/en/latest/">pip</a>. 
 
-1. Install Django (see <a href="https://docs.djangoproject.com/en/1.6/intro/install/">Django Installation Guide</a>).
+3. Install Django (see <a href="https://docs.djangoproject.com/en/1.6/intro/install/">Django Installation Guide</a>).
 
     `sudo pip install django`</li>
 
-1. To run SSL from localhost, install a <a href="https://github.com/teddziuba/django-sslserver">django-sslserver</a>.
+4. To run SSL from localhost, install a <a href="https://github.com/teddziuba/django-sslserver">django-sslserver</a>.
 
     `sudo pip install django-sslserver`<br>
 
@@ -148,18 +148,18 @@ First, we need to install these dependencies:
        )
    </pre>
 
-1. Edit `djangoProject/views.py` and insert your Key and Secret.
+5. Edit `djangoProject/views.py` and insert your Key and Secret.
    Note that your WSKey must be configured with these parameters:
    * RedirectURI that matches the URI you are running the example from. For example, <strong>https://localhost:8000/auth/</strong>
    * Scopes. ie, <strong>WorldCatMetadataAPI</strong> for the Django example provided with this library.
 
-1. Use runsslserver to start Django's SSL server from the `examples/authentication_token_with_django` directory:
+6. Use runsslserver to start Django's SSL server from the `examples/authentication_token_with_django` directory:
 
     `python manage.py runsslserver`
 
-1. Direct your browser to `https://localhost:8000/auth/`.
+7. Direct your browser to `https://localhost:8000/auth/`.
 
-1. If all goes well, you should see some authentication warnings (that's expected - because runsslserver uses a self-signed CACERT). Click through the warning messages and you should see an authentication screen.
+8. If all goes well, you should see some authentication warnings (that's expected - because runsslserver uses a self-signed CACERT). Click through the warning messages and you should see an authentication screen.
 
     * Sign in with your userId and Password
     * When prompted to allow access, click yes
