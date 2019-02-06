@@ -226,9 +226,9 @@ class AccessToken(object):
         """ Request an access token. """
         request = six.moves.urllib.request.Request(
             url=url,
-            data="",
             headers={'Authorization': authorization,
-                     'Accept': 'application/json'}
+         'Accept': 'application/json'},
+            data={}
         )
 
         opener = six.moves.urllib.request.build_opener()
@@ -299,10 +299,16 @@ class AccessToken(object):
             )
 
     def parse_error_response(self, http_error):
-        self.error_code = http_error.getcode()
-        self.error_message = str(http_error)
-        self.error_url = http_error.geturl()
-        return ''
+        try:
+            error_json = json.loads(http_error.read())
+            self.error_code = http_error.getcode()
+            self.error_message = error_json['message']
+            self.error_detail = error_json['details']
+            self.error_url = http_error.geturl()
+        except ValueError:
+            print("ValueError: Unable to decode this Access Token response string to JSON:")
+            print(response_string)
+            return
 
     def __str__(self):
 
