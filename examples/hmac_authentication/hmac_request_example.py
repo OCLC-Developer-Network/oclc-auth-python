@@ -20,21 +20,8 @@
 # Sample HMAC Hashing for Bibliographic record retrieval
 
 from authliboclc import wskey, user
-import httplib, urllib2
-from urllib2 import URLError
-
-""" Helper class used to display the result headers """
-class MyHTTPSConnection(httplib.HTTPSConnection):
-    def send(self, s):
-        print s
-        httplib.HTTPSConnection.send(self, s)
-
-""" Helper class used to display the result headers """
-class MyHTTPSHandler(urllib2.HTTPSHandler):
-    def https_open(self, req):
-        request = self.do_open(MyHTTPSConnection, req)
-        print request.info()
-        return request
+import requests
+import xml.etree.ElementTree as ET
 
 #
 # You must supply these parameters to authenticate
@@ -68,19 +55,16 @@ authorization_header = my_wskey.get_hmac_signature(
         'auth_params': None}
 )
 
-""" We create an opener that accesses our helper classes, so we can display the headers that are returned."""
-opener = urllib2.build_opener(MyHTTPSHandler)
-opener.addheaders = [('Authorization', authorization_header)]
-
-print ""
-
+headers={'Authorization': authorization_header, 'Accept': 'application/atom+xml;content="application/vnd.oclc.marc21+xml"'}
 try:
-    response = opener.open(request_url)
-    response_body = response.read()
-    print response_body
+    r = requests.get(request_url, headers=headers)
+    r.raise_for_status()
+    response_body = ET.fromstring(r.content)
+    ns = {'atom': 'http://www.w3.org/2005/Atom',
+      'rb': 'http://worldcat.org/rb',
+      'marc': 'http://www.loc.gov/MARC21/slim'}
 
-except URLError as e:
-    response_body = e.read()
-    print response_body
-    if key == '{clientID}':
-        print('\n** Note: Edit the script and supply valid authentication parameters. **\n')
+    record = response_body.find('.//atom:content/rb:response/marc:record', ns)
+    print(ET.tostring(record, encoding='utf8').decode('utf8'))
+except requests.exceptions.HTTPError as err:
+    print("Read failed. " + str(err.response.status_code))
