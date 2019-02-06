@@ -185,12 +185,13 @@ class Wskey(object):
 
         return accessToken
 
-    def get_access_token_with_client_credentials(self, authenticating_institution_id=None, context_institution_id=None):
+    def get_access_token_with_client_credentials(self, authenticating_institution_id=None, context_institution_id=None, user=None):
         """Retrieves an Access Token using a Client Credentials Grant
 
         Args:
             authenticating_institution_id: string, the institution the user authenticates against
             context_institution_id: string, the institution that the requests will be made against
+            user: object, a user object associated with the key. See user.py in the authliboclc library folder.
 
         Returns:
             object, an access token
@@ -213,7 +214,7 @@ class Wskey(object):
             }
         )
 
-        accessToken.create(wskey=self)
+        accessToken.create(wskey=self, user=user)
 
         return accessToken
 
