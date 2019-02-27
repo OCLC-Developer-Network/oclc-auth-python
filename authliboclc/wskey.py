@@ -22,14 +22,7 @@ Stores the WSKey parameters and methods for HMAC Hashing and requesting access t
 
 """
 
-import copy
-import base64
-import hashlib
-import hmac
-import math
-import random
-import string
-import time
+import copy, base64, hashlib, hmac, math, random, string, time
 
 from .authcode import AuthCode
 from .accesstoken import AccessToken
