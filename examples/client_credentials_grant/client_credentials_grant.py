@@ -19,8 +19,9 @@
 
 # Example of retrieving a token with Client Credentials Grant
 
-import urllib2
 from authliboclc import wskey
+import requests
+import xml.etree.ElementTree as ET
 
 #
 # Authentication Parameters
@@ -60,7 +61,6 @@ else:
     print("type:          " + access_token.type)
     if (access_token.refresh_token != None):
         print("refresh_token: " + access_token.refresh_token)
-print("")
 
 # Make a Discovery API Search request with the following query:
 #   businesses+utilities+and+transportation+AND+creator:Stoll
@@ -77,23 +77,16 @@ print("")
 # 2. The search parameter "author" was mapped to "creator". In our example here we are searching on
 #    "creator:Stoll" rather than "author:Stoll".
 #
-if (access_token.access_token_string != None):
     query = 'businesses+utilities+and+transportation+AND+creator:Stoll'
     dbIds = '638'
     request_url = 'https://beta.worldcat.org/discovery/bib/search?' + 'q=' + query + '&' + 'dbIds=' + dbIds
     authorization = 'Bearer ' + access_token.access_token_string
 
-    my_request = urllib2.Request(
-        url=request_url,
-        data=None,
-        headers={'Authorization': authorization, 'Accept': 'application/json'}
-    )
-
+    headers={'Authorization': authorization_header, 'Accept': 'application/json'}
     try:
-        result = urllib2.urlopen(my_request).read()
-
-    except urllib2.HTTPError, e:
-        result = "\n" + str(e) + "\n"
-        result += e.read() + "\n"
-
-    print(result)
+        r = requests.get(request_url, headers=headers)
+        r.raise_for_status()
+        response_body = r.json()
+        print(response_body)
+    except requests.exceptions.HTTPError as err:
+        print("Read failed. " + str(err.response.status_code))
