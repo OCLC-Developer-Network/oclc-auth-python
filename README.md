@@ -7,7 +7,7 @@ Installation
 ------------
 The easiest way to install is via pip:
 
-`pip install git+git:https://github.com/OCLC-Developer-Network/oclc-auth-python`
+`pip install git+https://github.com/OCLC-Developer-Network/oclc-auth-python`
 
 Alternatively, clone the repository:
 
@@ -358,7 +358,7 @@ request_url = (
 Now we construct an authorization header using our Access Token's user parameter:
 
 <pre>
-authorization_header = wskey.get_hmac_signature(
+authorization_header = my_wskey.get_hmac_signature(
     method='GET',
     request_url=request_url,
     options={
