@@ -1,6 +1,8 @@
 OCLC Python Authentication Library
 ==================================
 
+> **WARNING**: This library is being sunset. Please use a standard OAuth 2.0 client. See https://github.com/OCLC-Developer-Network/gists/tree/master/python for example usage
+
 This library is a wrapper around the Web Service Authentication system used by OCLC web services, written for Python. It works with versions 2.7 and 3 (up to 3.6)
 
 Installation
