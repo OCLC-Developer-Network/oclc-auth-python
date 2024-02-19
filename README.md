@@ -238,7 +238,7 @@ With our request URL and Authorization header prepared, we are ready to use Pyth
 library to make the GET request.
 
 <pre>
-my_request = urllib2.Request(
+myRequest = urllib2.Request(
     url=request_url,
     data=None,
     headers={'Authorization': authorization_header}
